@@ -1,0 +1,56 @@
+Alin Li Simulators
+==================
+
+Copyright 2026 Alin Li OÜ
+Estonian private limited company, registry 17184688
+Distributed at:  https://alinli.com/simulators.html
+Source:          https://github.com/Alin-Li-OU/Simulators
+Contact:         Compliance@alinli.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Third-party open-source components
+===================================
+
+None.
+
+The simulators in this repository are self-contained single-file HTML
+documents. They load no fonts, scripts, stylesheets, or other resources
+from third-party servers, and bundle no third-party open-source
+libraries. Visual design relies on operating-system fonts (Segoe UI,
+SF system fonts, Tahoma, Consolas, and similar fallbacks), which are
+part of the user's operating system and are not redistributed by
+Alin Li OÜ.
+
+Per-simulator notices and SBOMs are published under credits/ and sbom/
+in this repository, and mirrored at:
+
+    https://alinli.com/credits/<slug>.html
+    https://alinli.com/sbom/<slug>.cdx.json
+
+
+Open-source compliance programme
+================================
+
+Alin Li OÜ operates an open-source-software compliance programme that is
+self-certified to ISO/IEC 5230:2020 (OpenChain Specification 2.1).
+The programme permits the future addition of third-party components
+under specified licences, subject to review (see CONTRIBUTING.md and
+OSS-REVIEW.md). If a third-party component is added to a future
+release, this NOTICE will be updated.
+
+Public conformance statement:  https://alinli.com/oss/conformance.html
+Review-process diagram:        https://alinli.com/oss/review-process.html
+Reviews:                       twice yearly, on 2 February and 2 December
+Programme contact:             Compliance@alinli.com

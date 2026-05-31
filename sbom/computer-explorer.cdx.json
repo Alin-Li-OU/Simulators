@@ -1,0 +1,62 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "serialNumber": "urn:uuid:alinli-computer-explorer-1-0-0-20260531",
+  "metadata": {
+    "timestamp": "2026-05-31T00:00:00Z",
+    "tools": [
+      {
+        "vendor": "Alin Li OÜ",
+        "name": "manual-sbom-author",
+        "version": "1.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "app/computer-explorer",
+      "group": "com.alinli",
+      "name": "Alin Li Computer Explorer",
+      "version": "1.0.0",
+      "description": "An interactive boot-up journey: follow what happens inside a computer when you press the power button.",
+      "publisher": "Alin Li OÜ",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://alinli.com/simulators.html"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/Alin-Li-OU/Simulators"
+        },
+        {
+          "type": "documentation",
+          "url": "https://alinli.com/credits/computer-explorer.html"
+        },
+        {
+          "type": "other",
+          "url": "mailto:Compliance@alinli.com",
+          "comment": "Open-source compliance contact"
+        }
+      ]
+    }
+  },
+  "components": [],
+  "compositions": [
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "app/computer-explorer"
+      ],
+      "description": "This application is a self-contained single-file HTML document. It loads no external resources at runtime and bundles no third-party open-source components. The empty components list is therefore complete and accurate."
+    }
+  ]
+}

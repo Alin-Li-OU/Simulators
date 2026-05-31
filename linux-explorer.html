@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alin Li Linux Explorer 🐧 — Learn Linux Commands Interactively!</title>
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg2: #0f1420;
+  --bg3: #151b2b;
+  --panel: #1a2138;
+  --border: #252d44;
+  --border-hi: #3b4670;
+  --text: #c8d0e8;
+  --text-dim: #6b7394;
+  --text-bright: #e8ecf8;
+  --green: #4ade80;
+  --green-dim: #166534;
+  --green-glow: rgba(74,222,128,0.15);
+  --cyan: #22d3ee;
+  --cyan-dim: #164e63;
+  --cyan-glow: rgba(34,211,238,0.12);
+  --amber: #fbbf24;
+  --amber-dim: #78350f;
+  --amber-glow: rgba(251,191,36,0.12);
+  --rose: #fb7185;
+  --rose-glow: rgba(251,113,133,0.12);
+  --violet: #a78bfa;
+  --violet-glow: rgba(167,139,250,0.12);
+  --r: 16px;
+  --rs: 10px;
+  --mono: "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;min-height:100vh;}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:280px 1fr 300px;grid-template-rows:auto 1fr;min-height:100vh;}
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;}
+.sidebar-l{background:var(--bg2);border-right:1px solid var(--border);padding:20px;overflow-y:auto;max-height:calc(100vh - 56px);position:sticky;top:56px;}
+.main-area{padding:24px;overflow-y:auto;max-height:calc(100vh - 56px);position:sticky;top:56px;}
+.sidebar-r{background:var(--bg2);border-left:1px solid var(--border);padding:20px;overflow-y:auto;max-height:calc(100vh - 56px);position:sticky;top:56px;}
+
+/* TOPBAR */
+.topbar .brand{display:flex;align-items:center;gap:10px;}
+.topbar .brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--green),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.topbar .brand-name{font-weight:700;font-size:1.1rem;color:var(--text-bright);}
+.topbar .brand-sub{font-size:.75rem;color:var(--text-dim);margin-left:8px;}
+
+.xp-bar{display:flex;align-items:center;gap:10px;}
+.xp-label{font-size:.78rem;color:var(--text-dim);font-weight:600;}
+.xp-track{width:160px;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:4px;transition:width .6s ease;width:0%;}
+.xp-level{font-size:.82rem;font-weight:700;color:var(--amber);background:var(--amber-glow);padding:2px 10px;border-radius:12px;}
+
+/* SIDEBAR LEFT - LEVELS */
+.level-section{margin-bottom:24px;}
+.level-section h3{font-size:.72rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
+
+.level-item{
+  padding:10px 14px;border-radius:var(--rs);margin-bottom:6px;cursor:pointer;
+  transition:all .25s;border:1px solid transparent;display:flex;align-items:center;gap:10px;
+}
+.level-item:hover{background:var(--bg3);border-color:var(--border);}
+.level-item.active{background:var(--green-glow);border-color:var(--green);color:var(--green);}
+.level-item.completed{opacity:.6;}
+.level-item.completed .li-check{color:var(--green);}
+.level-item .li-num{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;border:1px solid var(--border);}
+.level-item.active .li-num{background:var(--green);color:var(--bg);border-color:var(--green);}
+.level-item.completed .li-num{background:var(--green-dim);color:var(--green);border-color:var(--green-dim);}
+.level-item .li-text{font-size:.82rem;font-weight:600;}
+.level-item .li-check{margin-left:auto;font-size:.9rem;opacity:0;}
+.level-item.completed .li-check{opacity:1;}
+
+/* MAIN - TERMINAL + CHALLENGE */
+.challenge-box{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px;margin-bottom:20px;
+}
+.challenge-box .cb-tag{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.challenge-box h2{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1.3rem;font-weight:700;color:var(--text-bright);margin-bottom:8px;}
+.challenge-box p{font-size:.9rem;color:var(--text-dim);margin-bottom:4px;}
+.challenge-box .hint{font-size:.82rem;color:var(--amber);background:var(--amber-glow);padding:8px 14px;border-radius:var(--rs);margin-top:12px;display:none;}
+.hint-btn{background:none;border:1px solid var(--amber);color:var(--amber);padding:4px 14px;border-radius:20px;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;margin-top:10px;transition:all .2s;}
+.hint-btn:hover{background:var(--amber-glow);}
+
+/* TERMINAL */
+.terminal{
+  background:#0c0c0c;border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--border);
+}
+.terminal-bar{
+  background:#1a1a1a;padding:8px 14px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid #2a2a2a;
+}
+.terminal-bar .dot{width:10px;height:10px;border-radius:50%;}
+.dot-r{background:#ff5f56;}.dot-y{background:#ffbd2e;}.dot-g{background:#27c93f;}
+.terminal-bar .title{margin-left:8px;font-size:.75rem;color:#666;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;}
+
+.terminal-body{
+  padding:16px;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.85rem;
+  min-height:320px;max-height:420px;overflow-y:auto;
+  line-height:1.7;
+}
+.terminal-body::-webkit-scrollbar{width:6px;}
+.terminal-body::-webkit-scrollbar-track{background:#0c0c0c;}
+.terminal-body::-webkit-scrollbar-thumb{background:#333;border-radius:3px;}
+
+.t-line{margin-bottom:2px;word-wrap:break-word;}
+.t-prompt{color:var(--green);font-weight:600;}
+.t-user{color:var(--cyan);}
+.t-path{color:var(--violet);}
+.t-cmd{color:var(--text-bright);}
+.t-output{color:#999;}
+.t-error{color:var(--rose);}
+.t-success{color:var(--green);}
+.t-info{color:var(--cyan);}
+.t-file{color:var(--amber);}
+.t-dir{color:var(--cyan);font-weight:600;}
+
+.input-line{display:flex;align-items:center;gap:0;margin-top:4px;}
+.input-line .prompt-text{color:var(--green);font-weight:600;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.85rem;}
+#cmdInput{
+  background:none;border:none;outline:none;color:var(--text-bright);
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.85rem;flex:1;padding:0 0 0 6px;
+  caret-color:var(--green);
+}
+
+/* SUCCESS ANIMATION */
+.success-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:9999;align-items:center;justify-content:center;
+}
+.success-overlay.show{display:flex;}
+.success-card{
+  background:var(--panel);border:2px solid var(--green);border-radius:var(--r);
+  padding:40px;text-align:center;max-width:400px;
+  animation:popIn .4s ease;
+}
+@keyframes popIn{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+.success-card .sc-emoji{font-size:3.5rem;margin-bottom:12px;}
+.success-card h3{font-size:1.3rem;color:var(--green);margin-bottom:6px;}
+.success-card p{font-size:.9rem;color:var(--text-dim);margin-bottom:18px;}
+.success-card .sc-xp{font-size:1.1rem;font-weight:700;color:var(--amber);margin-bottom:16px;}
+.btn-next{
+  background:linear-gradient(135deg,var(--green),var(--cyan));color:var(--bg);
+  padding:12px 28px;border-radius:50px;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.95rem;
+  font-weight:700;border:none;cursor:pointer;transition:all .3s;
+}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 4px 20px var(--green-glow);}
+
+/* SIDEBAR RIGHT - REFERENCE */
+.ref-section{margin-bottom:20px;}
+.ref-section h3{font-size:.72rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
+.ref-cmd{
+  padding:8px 12px;border-radius:var(--rs);margin-bottom:6px;
+  background:var(--bg3);border:1px solid var(--border);
+  cursor:pointer;transition:all .2s;
+}
+.ref-cmd:hover{border-color:var(--cyan);background:var(--cyan-glow);}
+.ref-cmd .rc-name{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.8rem;font-weight:600;color:var(--cyan);}
+.ref-cmd .rc-desc{font-size:.72rem;color:var(--text-dim);margin-top:2px;}
+
+.fs-tree{
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.78rem;color:var(--text-dim);
+  background:var(--bg);border-radius:var(--rs);padding:12px;
+  border:1px solid var(--border);line-height:1.8;
+}
+.fs-tree .dir{color:var(--cyan);font-weight:600;}
+.fs-tree .file{color:var(--amber);}
+.fs-current{color:var(--green);font-weight:700;}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto;}
+  .sidebar-l,.sidebar-r{max-height:none;position:static;border:none;border-bottom:1px solid var(--border);}
+  .main-area{max-height:none;position:static;}
+  .sidebar-l{display:none;}
+  .sidebar-r{display:none;}
+}
+
+/* Welcome screen */
+.welcome{
+  text-align:center;padding:60px 20px;
+}
+.welcome h1{font-size:2rem;font-weight:700;color:var(--text-bright);margin-bottom:8px;}
+.welcome h1 span{color:var(--green);}
+.welcome p{color:var(--text-dim);font-size:1rem;max-width:500px;margin:0 auto 24px;}
+.welcome .start-btn{
+  background:linear-gradient(135deg,var(--green),var(--cyan));color:var(--bg);
+  padding:16px 40px;border-radius:50px;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1.1rem;
+  font-weight:700;border:none;cursor:pointer;transition:all .3s;
+}
+.welcome .start-btn:hover{transform:translateY(-3px);box-shadow:0 6px 30px var(--green-glow);}
+
+.stats-bar{display:flex;gap:16px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:var(--rs);padding:12px 20px;text-align:center;}
+.stat .s-num{font-size:1.3rem;font-weight:700;color:var(--green);}
+.stat .s-label{font-size:.72rem;color:var(--text-dim);font-weight:600;}
+</style>
+</head>
+<body>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="sc-emoji" id="scEmoji">🎉</div>
+    <h3 id="scTitle">Challenge Complete!</h3>
+    <p id="scDesc">You've mastered this command!</p>
+    <div class="sc-xp" id="scXp">+10 XP</div>
+    <button class="btn-next" id="nextBtn">Next Challenge →</button>
+  </div>
+</div>
+
+<div class="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🐧</div>
+      <div class="brand-name">Alin Li Linux Explorer</div>
+      <div class="brand-sub">Interactive Terminal</div>
+    </div>
+    <div class="xp-bar">
+      <span class="xp-label">XP:</span>
+      <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+      <span class="xp-level" id="xpLevel">Level 1</span>
+      <span class="xp-label" id="xpPoints" style="color:var(--green);font-weight:700;">0 / 100</span>
+    </div>
+  </div>
+
+  <!-- LEFT SIDEBAR - LEVELS -->
+  <div class="sidebar-l" id="sidebarL">
+    <div class="level-section">
+      <h3>🗺️ Challenges</h3>
+      <div id="levelList"></div>
+    </div>
+  </div>
+
+  <!-- MAIN AREA -->
+  <div class="main-area" id="mainArea">
+    <!-- Welcome screen shown initially -->
+    <div class="welcome" id="welcomeScreen">
+      <div style="font-size:4rem;margin-bottom:16px;">🐧</div>
+      <h1>Welcome to <span>Linux Explorer</span>!</h1>
+      <p>Learn real Linux commands by typing them in an interactive terminal. Complete challenges, earn XP, and become a Linux hero!</p>
+      <div class="stats-bar">
+        <div class="stat"><div class="s-num">20</div><div class="s-label">Challenges</div></div>
+        <div class="stat"><div class="s-num">40+</div><div class="s-label">Commands</div></div>
+        <div class="stat"><div class="s-num">🏆</div><div class="s-label">Earn Badges</div></div>
+      </div>
+      <button class="start-btn" id="startBtn">Start Exploring! 🚀</button>
+      <p style="margin-top:16px;font-size:.82rem;color:var(--text-dim);">Part of the <strong style="color:var(--violet);">Alin Li Open Source Course</strong></p>
+    </div>
+
+    <!-- Challenge + Terminal (hidden initially) -->
+    <div id="gameArea" style="display:none;">
+      <div class="challenge-box" id="challengeBox">
+        <div class="cb-tag" id="cbTag" style="color:var(--green);">📋 CHALLENGE 1 / 20</div>
+        <h2 id="cbTitle">Loading...</h2>
+        <p id="cbDesc">Loading...</p>
+        <p id="cbTask" style="color:var(--text-bright);font-weight:600;margin-top:8px;"></p>
+        <button class="hint-btn" id="hintBtn">💡 Show Hint</button>
+        <div class="hint" id="cbHint"></div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="title">student@alinli-explorer:~</span>
+        </div>
+        <div class="terminal-body" id="termBody">
+          <div class="t-line t-info">Welcome to Alin Li Linux Explorer! 🐧</div>
+          <div class="t-line t-info">Type commands below. Type <span style="color:var(--amber);">help</span> for a list of commands.</div>
+          <div class="t-line">&nbsp;</div>
+        </div>
+        <div style="padding:4px 16px 12px;background:#0c0c0c;">
+          <div class="input-line">
+            <span class="prompt-text" id="promptText">student@alinli:~$ </span>
+            <input type="text" id="cmdInput" autofocus autocomplete="off" spellcheck="false" placeholder="Type a command...">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR - REFERENCE -->
+  <div class="sidebar-r" id="sidebarR">
+    <div class="ref-section">
+      <h3>📖 Command Reference</h3>
+      <div id="refList"></div>
+    </div>
+    <div class="ref-section">
+      <h3>📁 File System</h3>
+      <div class="fs-tree" id="fsTree">
+        <div><span class="dir">/</span> (root)</div>
+        <div>&nbsp;&nbsp;<span class="dir">home/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="fs-current dir">student/</span> ← you are here</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">hello.txt</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">Documents/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">report.md</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">notes.txt</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">Pictures/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">photo.png</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">projects/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">app.py</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">index.html</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">Music/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">Downloads/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">linux-book.pdf</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== FILE SYSTEM =====
+const FS = {
+  '/': { type:'dir', children:['home','etc','var','usr','tmp'] },
+  '/home': { type:'dir', children:['student'] },
+  '/home/student': { type:'dir', children:['hello.txt','Documents','Pictures','projects','Music','Downloads','.bashrc'] },
+  '/home/student/hello.txt': { type:'file', content:'Hello, world! Welcome to Linux!\nThis is your first text file.\nHave fun exploring!' },
+  '/home/student/.bashrc': { type:'file', content:'# Bash configuration\nexport PATH=$PATH:/usr/local/bin\nalias ll="ls -la"\n# Alin Li Linux Explorer' },
+  '/home/student/Documents': { type:'dir', children:['report.md','notes.txt','secret-message.txt'] },
+  '/home/student/Documents/report.md': { type:'file', content:'# My Open Source Report\n\nOpen source is amazing because:\n1. It is free\n2. It is transparent\n3. Everyone can contribute\n\n— Written with LibreOffice' },
+  '/home/student/Documents/notes.txt': { type:'file', content:'Remember to learn:\n- Linux commands\n- Git basics\n- Python programming\n- How to contribute to open source' },
+  '/home/student/Documents/secret-message.txt': { type:'file', content:'🎉 You found the secret message!\nOpen source is a superpower!\nKeep exploring and never stop learning!' },
+  '/home/student/Pictures': { type:'dir', children:['photo.png','screenshot.jpg'] },
+  '/home/student/Pictures/photo.png': { type:'file', content:'[Binary: photo.png - 2.4 MB - A beautiful penguin photo!]' },
+  '/home/student/Pictures/screenshot.jpg': { type:'file', content:'[Binary: screenshot.jpg - 1.1 MB - Linux desktop screenshot]' },
+  '/home/student/projects': { type:'dir', children:['app.py','index.html','README.md'] },
+  '/home/student/projects/app.py': { type:'file', content:'#!/usr/bin/env python3\n# My first Python app!\n\ndef greet(name):\n    return f"Hello, {name}! Welcome to open source!"\n\nprint(greet("Explorer"))' },
+  '/home/student/projects/index.html': { type:'file', content:'<!DOCTYPE html>\n<html>\n<head><title>My Website</title></head>\n<body>\n  <h1>Hello from Linux!</h1>\n  <p>Built with open-source tools!</p>\n</body>\n</html>' },
+  '/home/student/projects/README.md': { type:'file', content:'# My Open Source Project\nThis is my first open-source project!\n\n## How to run\n```\npython3 app.py\n```\n\nLicense: MIT' },
+  '/home/student/Music': { type:'dir', children:[] },
+  '/home/student/Downloads': { type:'dir', children:['linux-book.pdf'] },
+  '/home/student/Downloads/linux-book.pdf': { type:'file', content:'[Binary: linux-book.pdf - 5.2 MB - "Linux for Beginners" by Alin Li]' },
+  '/etc': { type:'dir', children:['hostname','os-release'] },
+  '/etc/hostname': { type:'file', content:'alinli-explorer' },
+  '/etc/os-release': { type:'file', content:'NAME="Alin Li Linux"\nVERSION="1.0 (Explorer Edition)"\nID=alinli\nHOME_URL="https://alinli.com"\nPRETTY_NAME="Alin Li Linux Explorer"' },
+  '/var': { type:'dir', children:['log'] },
+  '/var/log': { type:'dir', children:['syslog'] },
+  '/var/log/syslog': { type:'file', content:'[System log - Access restricted]' },
+  '/usr': { type:'dir', children:['bin','share'] },
+  '/usr/bin': { type:'dir', children:['python3','git','nano','vim'] },
+  '/usr/share': { type:'dir', children:['doc'] },
+  '/tmp': { type:'dir', children:[] },
+};
+
+let cwd = '/home/student';
+let xp = 0;
+let currentLevel = 0;
+let completedLevels = new Set();
+let cmdHistory = [];
+let historyIdx = -1;
+
+// ===== CHALLENGES =====
+const challenges = [
+  { title:"Say Hello to Linux!", desc:"Let's start with the most basic command.", task:"Type <code style='color:var(--cyan)'>echo Hello Linux</code> to print a message.", hint:"Just type: echo Hello Linux", check: cmd => cmd.startsWith('echo '), xp:5, emoji:'👋' },
+  { title:"Where Am I?", desc:"Find out which directory you're currently in.", task:"Type <code style='color:var(--cyan)'>pwd</code> to print your working directory.", hint:"pwd stands for 'Print Working Directory'", check: cmd => cmd.trim()==='pwd', xp:5, emoji:'📍' },
+  { title:"Look Around!", desc:"See what files and folders are in your current directory.", task:"Type <code style='color:var(--cyan)'>ls</code> to list the contents.", hint:"ls stands for 'list'. Try it!", check: cmd => cmd.trim()==='ls' || cmd.startsWith('ls '), xp:5, emoji:'👀' },
+  { title:"See the Details", desc:"List files with extra details like size and permissions.", task:"Type <code style='color:var(--cyan)'>ls -la</code> to see a detailed listing.", hint:"The -l flag means 'long format', -a means 'all files including hidden'", check: cmd => cmd.includes('ls') && cmd.includes('-l'), xp:10, emoji:'🔍' },
+  { title:"Read a File", desc:"Let's read what's inside a text file!", task:"Type <code style='color:var(--cyan)'>cat hello.txt</code> to display the file contents.", hint:"cat is short for 'concatenate' — it shows file contents", check: cmd => cmd.startsWith('cat '), xp:10, emoji:'📖' },
+  { title:"Enter a Folder", desc:"Move into the Documents directory.", task:"Type <code style='color:var(--cyan)'>cd Documents</code> to change directory.", hint:"cd means 'change directory'", check: cmd => cmd.startsWith('cd '), xp:10, emoji:'📂' },
+  { title:"Go Back!", desc:"Go back to the parent directory.", task:"Type <code style='color:var(--cyan)'>cd ..</code> to go up one level.", hint:"Two dots (..) means 'parent directory'", check: cmd => cmd.trim()==='cd ..' || cmd.trim()==='cd ../', xp:10, emoji:'⬆️' },
+  { title:"Create a New Folder", desc:"Create your own directory!", task:"Type <code style='color:var(--cyan)'>mkdir my-project</code> to create a new folder.", hint:"mkdir means 'make directory'", check: cmd => cmd.startsWith('mkdir '), xp:15, emoji:'🏗️' },
+  { title:"Create a File", desc:"Create a new empty file.", task:"Type <code style='color:var(--cyan)'>touch myfile.txt</code> to create a new file.", hint:"touch creates empty files (or updates timestamps)", check: cmd => cmd.startsWith('touch '), xp:15, emoji:'✨' },
+  { title:"Write to a File", desc:"Put some text into a file using echo and redirect.", task:"Type <code style='color:var(--cyan)'>echo I love Linux > myfile.txt</code>", hint:"The > symbol redirects output into a file", check: cmd => cmd.includes('>'), xp:15, emoji:'✍️' },
+  { title:"Copy a File", desc:"Make a copy of a file.", task:"Type <code style='color:var(--cyan)'>cp myfile.txt backup.txt</code> to copy it.", hint:"cp means 'copy'. Syntax: cp source destination", check: cmd => cmd.startsWith('cp '), xp:15, emoji:'📋' },
+  { title:"Move / Rename", desc:"Rename a file using the move command.", task:"Type <code style='color:var(--cyan)'>mv backup.txt renamed.txt</code>", hint:"mv is 'move' but it also renames files!", check: cmd => cmd.startsWith('mv '), xp:15, emoji:'🔄' },
+  { title:"Find Who You Are", desc:"Find out your username on this system.", task:"Type <code style='color:var(--cyan)'>whoami</code>", hint:"whoami — literally 'who am i?'", check: cmd => cmd.trim()==='whoami', xp:10, emoji:'🤔' },
+  { title:"Check the Date", desc:"What's today's date and time?", task:"Type <code style='color:var(--cyan)'>date</code>", hint:"The date command shows current date and time", check: cmd => cmd.trim()==='date', xp:5, emoji:'📅' },
+  { title:"System Info", desc:"Find out what Linux version you're running.", task:"Type <code style='color:var(--cyan)'>uname -a</code> to see system information.", hint:"uname means 'Unix name'. -a shows all info.", check: cmd => cmd.startsWith('uname'), xp:10, emoji:'🖥️' },
+  { title:"Search Inside Files", desc:"Use grep to search for text inside a file.", task:"Type <code style='color:var(--cyan)'>grep open Documents/report.md</code>", hint:"grep searches for text patterns in files", check: cmd => cmd.startsWith('grep '), xp:20, emoji:'🔎' },
+  { title:"Count Words", desc:"Count the words in a file.", task:"Type <code style='color:var(--cyan)'>wc Documents/notes.txt</code> to count lines, words, chars.", hint:"wc means 'word count'", check: cmd => cmd.startsWith('wc '), xp:15, emoji:'🔢' },
+  { title:"See Disk Space", desc:"Check how much space is used on the disk.", task:"Type <code style='color:var(--cyan)'>df -h</code> to see disk space (human-readable).", hint:"-h means 'human readable' — shows MB/GB instead of bytes", check: cmd => cmd.startsWith('df'), xp:10, emoji:'💽' },
+  { title:"Command History", desc:"See all the commands you've typed!", task:"Type <code style='color:var(--cyan)'>history</code>", hint:"history shows everything you've typed in the terminal", check: cmd => cmd.trim()==='history', xp:10, emoji:'📜' },
+  { title:"Clear the Screen", desc:"Clean up your terminal!", task:"Type <code style='color:var(--cyan)'>clear</code> to clear the terminal.", hint:"clear removes all text from the screen (but doesn't delete anything)", check: cmd => cmd.trim()==='clear', xp:5, emoji:'🧹' },
+];
+
+// ===== COMMAND REFERENCE =====
+const cmdRef = [
+  { name:'echo', desc:'Print text to the screen' },
+  { name:'pwd', desc:'Print working directory' },
+  { name:'ls', desc:'List files and folders' },
+  { name:'ls -la', desc:'Detailed list with hidden files' },
+  { name:'cd <dir>', desc:'Change directory' },
+  { name:'cd ..', desc:'Go up one directory' },
+  { name:'cat <file>', desc:'Display file contents' },
+  { name:'mkdir <name>', desc:'Create a new directory' },
+  { name:'touch <file>', desc:'Create a new empty file' },
+  { name:'cp <src> <dst>', desc:'Copy a file' },
+  { name:'mv <src> <dst>', desc:'Move or rename a file' },
+  { name:'rm <file>', desc:'Remove a file' },
+  { name:'whoami', desc:'Show your username' },
+  { name:'date', desc:'Show current date/time' },
+  { name:'uname -a', desc:'System information' },
+  { name:'grep <text> <file>', desc:'Search inside files' },
+  { name:'wc <file>', desc:'Count words/lines' },
+  { name:'df -h', desc:'Disk space usage' },
+  { name:'history', desc:'Command history' },
+  { name:'clear', desc:'Clear terminal screen' },
+  { name:'help', desc:'Show available commands' },
+];
+
+// ===== INIT =====
+function init() {
+  renderLevels();
+  renderRef();
+}
+
+function renderLevels() {
+  const el = document.getElementById('levelList');
+  el.innerHTML = challenges.map((c, i) => `
+    <div class="level-item ${i===currentLevel?'active':''} ${completedLevels.has(i)?'completed':''}" 
+         data-level="${i}" id="level-${i}">
+      <div class="li-num">${i+1}</div>
+      <div class="li-text">${c.title}</div>
+      <div class="li-check">✅</div>
+    </div>
+  `).join('');
+}
+
+function renderRef() {
+  const el = document.getElementById('refList');
+  el.innerHTML = cmdRef.map(c => `
+    <div class="ref-cmd" data-cmd="${c.name.split(' ')[0]}">
+      <div class="rc-name">${c.name}</div>
+      <div class="rc-desc">${c.desc}</div>
+    </div>
+  `).join('');
+}
+
+function insertCmd(cmd) {
+  document.getElementById('cmdInput').value = cmd + ' ';
+  document.getElementById('cmdInput').focus();
+}
+
+function loadChallenge(idx) {
+  const c = challenges[idx];
+  document.getElementById('cbTag').textContent = `📋 CHALLENGE ${idx+1} / ${challenges.length}`;
+  document.getElementById('cbTitle').textContent = c.title;
+  document.getElementById('cbDesc').textContent = c.desc;
+  document.getElementById('cbTask').innerHTML = '👉 ' + c.task;
+  document.getElementById('cbHint').textContent = '💡 ' + c.hint;
+  document.getElementById('cbHint').style.display = 'none';
+}
+
+function startExplorer() {
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('gameArea').style.display = 'block';
+  loadChallenge(0);
+  document.getElementById('cmdInput').focus();
+}
+
+function goToLevel(idx) {
+  currentLevel = idx;
+  loadChallenge(idx);
+  renderLevels();
+  document.getElementById('cmdInput').focus();
+}
+
+function showHint() {
+  document.getElementById('cbHint').style.display = 'block';
+}
+
+function updateXP() {
+  const level = Math.floor(xp / 100) + 1;
+  const pct = (xp % 100);
+  document.getElementById('xpFill').style.width = pct + '%';
+  document.getElementById('xpLevel').textContent = 'Level ' + level;
+  document.getElementById('xpPoints').textContent = xp + ' XP';
+}
+
+function showSuccess(challenge) {
+  const ov = document.getElementById('successOverlay');
+  document.getElementById('scEmoji').textContent = challenge.emoji;
+  document.getElementById('scTitle').textContent = challenge.title + ' — Complete!';
+  document.getElementById('scDesc').textContent = currentLevel >= challenges.length - 1 ? 
+    '🏆 You completed ALL challenges! You are a Linux Explorer!' : 
+    'Great job! Ready for the next challenge?';
+  document.getElementById('scXp').textContent = '+' + challenge.xp + ' XP';
+  ov.classList.add('show');
+}
+
+function nextLevel() {
+  document.getElementById('successOverlay').classList.remove('show');
+  if (currentLevel < challenges.length - 1) {
+    currentLevel++;
+    loadChallenge(currentLevel);
+    renderLevels();
+  }
+  document.getElementById('cmdInput').focus();
+}
+
+// ===== RESOLVE PATH =====
+function resolvePath(p) {
+  if (!p) return cwd;
+  if (p.startsWith('/')) return p;
+  if (p === '~') return '/home/student';
+  if (p.startsWith('~/')) return '/home/student/' + p.slice(2);
+  let parts = cwd.split('/').filter(Boolean);
+  p.split('/').forEach(seg => {
+    if (seg === '..') parts.pop();
+    else if (seg !== '.') parts.push(seg);
+  });
+  return '/' + parts.join('/');
+}
+
+// ===== PROCESS COMMAND =====
+function processCommand(raw) {
+  const cmd = raw.trim();
+  if (!cmd) return;
+  cmdHistory.push(cmd);
+  historyIdx = cmdHistory.length;
+  
+  const body = document.getElementById('termBody');
+  const promptHtml = `<span class="t-user">student</span>@<span style="color:var(--green)">alinli</span>:<span class="t-path">${cwd === '/home/student' ? '~' : cwd}</span>$ `;
+  
+  body.innerHTML += `<div class="t-line">${promptHtml}<span class="t-cmd">${escHtml(cmd)}</span></div>`;
+  
+  const parts = cmd.split(/\s+/);
+  const command = parts[0];
+  const args = parts.slice(1);
+  
+  let output = '';
+  
+  switch(command) {
+    case 'echo':
+      const text = args.join(' ').replace(/>/g,'').trim();
+      if (cmd.includes('>')) {
+        const fparts = cmd.split('>');
+        const fname = fparts[1].trim();
+        const fpath = resolvePath(fname);
+        FS[fpath] = { type:'file', content: fparts[0].replace('echo','').trim() };
+        // Add to parent
+        const parent = fpath.substring(0, fpath.lastIndexOf('/'));
+        if (FS[parent] && !FS[parent].children.includes(fname)) FS[parent].children.push(fname);
+        output = '';
+      } else {
+        output = `<div class="t-line t-output">${escHtml(args.join(' '))}</div>`;
+      }
+      break;
+
+    case 'pwd':
+      output = `<div class="t-line t-output">${cwd}</div>`;
+      break;
+
+    case 'ls':
+      const lsPath = resolvePath(args.filter(a=>!a.startsWith('-'))[0] || '');
+      const showAll = args.some(a=>a.includes('a'));
+      const showLong = args.some(a=>a.includes('l'));
+      if (FS[lsPath] && FS[lsPath].type === 'dir') {
+        let items = FS[lsPath].children || [];
+        if (!showAll) items = items.filter(i=>!i.startsWith('.'));
+        if (showLong) {
+          output = items.map(i => {
+            const fp = lsPath === '/' ? '/' + i : lsPath + '/' + i;
+            const isDir = FS[fp] && FS[fp].type === 'dir';
+            const perms = isDir ? 'drwxr-xr-x' : '-rw-r--r--';
+            const size = isDir ? '4096' : (FS[fp] ? FS[fp].content.length.toString() : '0');
+            const cls = isDir ? 't-dir' : 't-file';
+            return `<div class="t-line t-output">${perms}  student student  ${size.padStart(6)}  Mar 15  <span class="${cls}">${i}</span></div>`;
+          }).join('');
+          if (showAll) output = `<div class="t-line t-output">drwxr-xr-x  student student    4096  Mar 15  <span class="t-dir">.</span></div><div class="t-line t-output">drwxr-xr-x  student student    4096  Mar 15  <span class="t-dir">..</span></div>` + output;
+        } else {
+          output = `<div class="t-line t-output">${items.map(i=>{const fp=lsPath==='/'?'/'+i:lsPath+'/'+i;return FS[fp]&&FS[fp].type==='dir'?`<span class="t-dir">${i}/</span>`:`<span class="t-file">${i}</span>`;}).join('  ')}</div>`;
+        }
+      } else {
+        output = `<div class="t-line t-error">ls: cannot access '${args[0]}': No such file or directory</div>`;
+      }
+      break;
+
+    case 'cd':
+      if (!args[0] || args[0] === '~') { cwd = '/home/student'; }
+      else {
+        const np = resolvePath(args[0]);
+        if (FS[np] && FS[np].type === 'dir') { cwd = np; }
+        else { output = `<div class="t-line t-error">cd: no such directory: ${args[0]}</div>`; }
+      }
+      document.getElementById('promptText').textContent = `student@alinli:${cwd==='/home/student'?'~':cwd}$ `;
+      break;
+
+    case 'cat':
+      if (!args[0]) { output = `<div class="t-line t-error">cat: missing file argument</div>`; break; }
+      const catPath = resolvePath(args[0]);
+      if (FS[catPath] && FS[catPath].type === 'file') {
+        output = FS[catPath].content.split('\n').map(l => `<div class="t-line t-output">${escHtml(l)}</div>`).join('');
+      } else {
+        output = `<div class="t-line t-error">cat: ${args[0]}: No such file</div>`;
+      }
+      break;
+
+    case 'mkdir':
+      if (!args[0]) { output = `<div class="t-line t-error">mkdir: missing directory name</div>`; break; }
+      const mkPath = resolvePath(args[0]);
+      if (FS[mkPath]) { output = `<div class="t-line t-error">mkdir: '${args[0]}' already exists</div>`; }
+      else {
+        FS[mkPath] = { type:'dir', children:[] };
+        if (FS[cwd]) FS[cwd].children.push(args[0]);
+        output = `<div class="t-line t-success">Directory '${args[0]}' created! ✅</div>`;
+      }
+      break;
+
+    case 'touch':
+      if (!args[0]) { output = `<div class="t-line t-error">touch: missing file name</div>`; break; }
+      const tPath = resolvePath(args[0]);
+      if (!FS[tPath]) {
+        FS[tPath] = { type:'file', content:'' };
+        if (FS[cwd] && !FS[cwd].children.includes(args[0])) FS[cwd].children.push(args[0]);
+        output = `<div class="t-line t-success">File '${args[0]}' created! ✅</div>`;
+      }
+      break;
+
+    case 'cp':
+      if (args.length < 2) { output = `<div class="t-line t-error">cp: missing arguments (cp source dest)</div>`; break; }
+      const cpSrc = resolvePath(args[0]);
+      const cpDst = resolvePath(args[1]);
+      if (FS[cpSrc]) {
+        FS[cpDst] = { ...FS[cpSrc], content: FS[cpSrc].content };
+        if (FS[cwd] && !FS[cwd].children.includes(args[1])) FS[cwd].children.push(args[1]);
+        output = `<div class="t-line t-success">Copied '${args[0]}' → '${args[1]}' ✅</div>`;
+      } else {
+        output = `<div class="t-line t-error">cp: '${args[0]}' not found</div>`;
+      }
+      break;
+
+    case 'mv':
+      if (args.length < 2) { output = `<div class="t-line t-error">mv: missing arguments (mv source dest)</div>`; break; }
+      const mvSrc = resolvePath(args[0]);
+      const mvDst = resolvePath(args[1]);
+      if (FS[mvSrc]) {
+        FS[mvDst] = FS[mvSrc];
+        delete FS[mvSrc];
+        if (FS[cwd]) {
+          FS[cwd].children = FS[cwd].children.filter(c => c !== args[0]);
+          if (!FS[cwd].children.includes(args[1])) FS[cwd].children.push(args[1]);
+        }
+        output = `<div class="t-line t-success">Moved '${args[0]}' → '${args[1]}' ✅</div>`;
+      } else {
+        output = `<div class="t-line t-error">mv: '${args[0]}' not found</div>`;
+      }
+      break;
+
+    case 'rm':
+      if (!args[0]) { output = `<div class="t-line t-error">rm: missing file argument</div>`; break; }
+      const rmPath = resolvePath(args[0]);
+      if (FS[rmPath] && FS[rmPath].type === 'file') {
+        delete FS[rmPath];
+        if (FS[cwd]) FS[cwd].children = FS[cwd].children.filter(c=>c!==args[0]);
+        output = `<div class="t-line t-success">Removed '${args[0]}' ✅</div>`;
+      } else {
+        output = `<div class="t-line t-error">rm: '${args[0]}' not found or is a directory</div>`;
+      }
+      break;
+
+    case 'whoami':
+      output = `<div class="t-line t-output">student</div>`;
+      break;
+
+    case 'date':
+      output = `<div class="t-line t-output">${new Date().toString()}</div>`;
+      break;
+
+    case 'uname':
+      if (args.includes('-a')) {
+        output = `<div class="t-line t-output">Linux alinli-explorer 6.1.0-alinli #1 SMP x86_64 GNU/Linux</div>`;
+      } else {
+        output = `<div class="t-line t-output">Linux</div>`;
+      }
+      break;
+
+    case 'grep':
+      if (args.length < 2) { output = `<div class="t-line t-error">grep: usage: grep PATTERN FILE</div>`; break; }
+      const grepPattern = args[0].toLowerCase();
+      const grepPath = resolvePath(args[1]);
+      if (FS[grepPath] && FS[grepPath].type === 'file') {
+        const matches = FS[grepPath].content.split('\n').filter(l=>l.toLowerCase().includes(grepPattern));
+        if (matches.length) {
+          output = matches.map(l => {
+            const highlighted = l.replace(new RegExp(`(${escRegex(args[0])})`, 'gi'), '<span style="color:var(--rose);font-weight:700;">$1</span>');
+            return `<div class="t-line t-output">${highlighted}</div>`;
+          }).join('');
+        } else {
+          output = `<div class="t-line t-output">(no matches found)</div>`;
+        }
+      } else {
+        output = `<div class="t-line t-error">grep: ${args[1]}: No such file</div>`;
+      }
+      break;
+
+    case 'wc':
+      if (!args[0]) { output = `<div class="t-line t-error">wc: missing file argument</div>`; break; }
+      const wcPath = resolvePath(args[0]);
+      if (FS[wcPath] && FS[wcPath].type === 'file') {
+        const c = FS[wcPath].content;
+        const lines = c.split('\n').length;
+        const words = c.split(/\s+/).filter(Boolean).length;
+        const chars = c.length;
+        output = `<div class="t-line t-output">  ${lines}  ${words}  ${chars}  ${args[0]}</div>`;
+      } else {
+        output = `<div class="t-line t-error">wc: ${args[0]}: No such file</div>`;
+      }
+      break;
+
+    case 'df':
+      output = `<div class="t-line t-output">Filesystem      Size  Used  Avail  Use%  Mounted on</div>
+<div class="t-line t-output">/dev/sda1        50G  12G    38G    24%   /</div>
+<div class="t-line t-output">tmpfs           4.0G  128M  3.9G     3%   /tmp</div>`;
+      break;
+
+    case 'history':
+      output = cmdHistory.map((c, i) => `<div class="t-line t-output">  ${(i+1).toString().padStart(4)}  ${escHtml(c)}</div>`).join('');
+      break;
+
+    case 'clear':
+      body.innerHTML = '';
+      break;
+
+    case 'help':
+      output = `<div class="t-line t-info">📖 Available Commands:</div>` +
+        cmdRef.map(c => `<div class="t-line"><span style="color:var(--cyan);display:inline-block;width:140px;font-weight:600;">${c.name}</span> <span class="t-output">${c.desc}</span></div>`).join('');
+      break;
+
+    case 'sudo':
+      output = `<div class="t-line t-success">🐧 Nice try! In the real world, sudo gives you superuser powers!</div>`;
+      break;
+
+    case 'exit':
+      output = `<div class="t-line t-info">👋 Thanks for exploring! But you can't exit the adventure yet — keep learning!</div>`;
+      break;
+
+    default:
+      output = `<div class="t-line t-error">Command not found: ${command}. Type <span style="color:var(--amber)">help</span> for available commands.</div>`;
+  }
+  
+  if (output) body.innerHTML += output;
+  body.innerHTML += '<div class="t-line">&nbsp;</div>';
+  body.scrollTop = body.scrollHeight;
+  
+  // Check challenge
+  const ch = challenges[currentLevel];
+  if (ch && !completedLevels.has(currentLevel) && ch.check(cmd)) {
+    completedLevels.add(currentLevel);
+    xp += ch.xp;
+    updateXP();
+    renderLevels();
+    setTimeout(() => showSuccess(ch), 400);
+  }
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+// ===== EVENT LISTENERS (CSP-safe) =====
+document.getElementById('startBtn').addEventListener('click', startExplorer);
+document.getElementById('hintBtn').addEventListener('click', showHint);
+document.getElementById('nextBtn').addEventListener('click', nextLevel);
+
+document.getElementById('levelList').addEventListener('click', function(e) {
+  var item = e.target.closest('[data-level]');
+  if (item) goToLevel(parseInt(item.dataset.level));
+});
+
+document.getElementById('refList').addEventListener('click', function(e) {
+  var item = e.target.closest('[data-cmd]');
+  if (item) insertCmd(item.dataset.cmd);
+});
+
+document.querySelector('.terminal').addEventListener('click', function() {
+  document.getElementById('cmdInput').focus();
+});
+
+document.getElementById('cmdInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    processCommand(this.value);
+    this.value = '';
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (historyIdx > 0) { historyIdx--; this.value = cmdHistory[historyIdx] || ''; }
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (historyIdx < cmdHistory.length - 1) { historyIdx++; this.value = cmdHistory[historyIdx] || ''; }
+    else { historyIdx = cmdHistory.length; this.value = ''; }
+  } else if (e.key === 'Tab') {
+    e.preventDefault();
+    var val = this.value.trim();
+    var parts = val.split(/\s+/);
+    var last = parts[parts.length - 1];
+    if (last && FS[cwd] && FS[cwd].children) {
+      var match = FS[cwd].children.find(function(c) { return c.startsWith(last); });
+      if (match) { parts[parts.length - 1] = match; this.value = parts.join(' '); }
+    }
+  }
+});
+
+init();
+</script>
+
+
+<div style="text-align:center;padding:14px 12px;font-size:.78em;opacity:.65;font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Arial,sans-serif;color:#888;"><a href="credits/linux-explorer.html" style="color:inherit;text-decoration:underline">Open-source credits</a> &middot; <a href="oss/" style="color:inherit;text-decoration:underline">Open Source @ Alin Li</a></div>
+</body>
+</html>

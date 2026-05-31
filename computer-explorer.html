@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alin Li Computer Explorer — The Boot Journey!</title>
+<style>
+:root{--pd:#3D1A6E;--pk:#5B2D8E;--pm:#7B4FBF;--pl:#A87FDB;--pp:#D4B8F0;--pg:#F0E6FA;--lav:#E8DCF5;--mint:#A8EFCF;--md:#3DB87A;--mdeep:#1E7A4F;--sky:#A8D8EF;--skd:#3D8AB8;--pch:#EFCFA8;--pchd:#B87A3D;--rose:#EFA8CF;--rosed:#B83D7A;--yel:#EFE8A8;--yeld:#B8A03D;--coral:#FF7F7F;--elec:#00E5FF;--eleglo:rgba(0,229,255,0.4);--dblu:#4FC3F7;--powr:#FFB74D;--powglo:rgba(255,159,64,0.5);--bg:#F7F4FC;--tx:#2D1B4E;--txl:#6B5A8E;--txm:#9B8AB5;--wh:#fff;--sm:0 2px 8px rgba(91,45,142,.08);--md-sh:0 4px 20px rgba(91,45,142,.12);--lg:0 8px 40px rgba(91,45,142,.18);--glow:0 0 20px rgba(123,79,191,.3);--r:18px;--tr:.35s cubic-bezier(.4,0,.2,1)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;background:var(--bg);color:var(--tx);overflow-x:hidden}
+
+.hdr{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--pd),var(--pk),var(--pm));padding:12px 20px;display:flex;align-items:center;gap:14px;box-shadow:var(--lg)}
+.hdr::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mint),var(--sky),var(--pl),var(--rose),var(--mint));background-size:200% 100%;animation:rsl 4s linear infinite}
+@keyframes rsl{to{background-position:200% 0}}
+.hdr-logo{height:64px;border-radius:12px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+.hdr h1{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;color:#fff;font-size:1.5rem;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.hdr .sub{color:var(--pp);font-size:.8rem;font-weight:600}
+
+.nav{background:var(--wh);border-bottom:2px solid var(--pg);padding:10px 12px;position:sticky;top:88px;z-index:90;box-shadow:var(--sm)}
+.nav-t{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.nt{padding:7px 16px;border-radius:22px;border:2px solid var(--pp);background:var(--wh);color:var(--pm);font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.88rem;cursor:pointer;transition:var(--tr)}
+.nt:hover{background:var(--pg);transform:translateY(-2px)}
+.nt.on{background:linear-gradient(135deg,var(--pk),var(--pm));color:#fff;border-color:var(--pk);box-shadow:var(--md-sh)}
+
+.sec{display:none;padding:20px 14px 36px;max-width:1250px;margin:0 auto;position:relative;z-index:1}
+.sec.on{display:block;animation:fi .5s ease}
+@keyframes fi{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* Coach Byte */
+.miss{display:flex;align-items:flex-start;gap:12px;margin-bottom:18px}
+.m-av{flex-shrink:0;width:60px;height:60px;background:linear-gradient(135deg,var(--pm),var(--pl));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:var(--md-sh);border:3px solid #fff;animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.m-b{background:var(--wh);border-radius:4px 18px 18px 18px;padding:12px 16px;box-shadow:var(--md-sh);max-width:750px;border:2px solid var(--pp)}
+.m-b .mn{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;color:var(--pk);font-size:.8rem;font-weight:600;margin-bottom:2px}
+.m-b p{font-size:.9rem;line-height:1.55}
+
+.stitle{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1.7rem;color:var(--pk);text-align:center;margin-bottom:4px}
+.sdesc{text-align:center;color:var(--txl);font-size:.92rem;margin:6px auto 16px;max-width:650px;line-height:1.5}
+
+/* Legend */
+.leg{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:.75rem;font-weight:700}
+.leg span{display:flex;align-items:center;gap:4px}
+.ld{width:12px;height:12px;border-radius:50%;display:inline-block}
+
+/* Buttons */
+.ctrls{display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.btn{padding:9px 22px;border-radius:24px;border:none;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.92rem;cursor:pointer;transition:var(--tr);font-weight:500}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.bp{background:linear-gradient(135deg,var(--pk),var(--pm));color:#fff;box-shadow:var(--md-sh)}
+.bp:hover:not(:disabled){transform:translateY(-2px)}
+.bs{background:var(--wh);color:var(--pm);border:2px solid var(--pp)}
+.ba{background:linear-gradient(135deg,var(--md),var(--mdeep));color:#fff}
+
+/* Progress */
+.prog{width:100%;height:16px;background:var(--pg);border-radius:10px;overflow:hidden;margin-bottom:8px;box-shadow:inset 0 2px 6px rgba(0,0,0,.08)}
+.pfill{height:100%;width:0%;border-radius:10px;background:linear-gradient(90deg,var(--pk),var(--pl),var(--md));background-size:300% 100%;animation:shim 2.5s ease-in-out infinite;transition:width .5s ease}
+@keyframes shim{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.slbl{text-align:center;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.95rem;color:var(--pm);margin-bottom:14px;min-height:22px}
+
+/* 3-panel boot layout */
+.blay{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+@media(max-width:900px){.blay{grid-template-columns:1fr}.blay .vp{min-height:280px}}
+
+.vp{background:var(--wh);border-radius:var(--r);box-shadow:var(--md-sh);overflow:hidden;border:2px solid var(--pp);transition:border-color .3s}
+.vp.glow{border-color:var(--pm);box-shadow:var(--glow)}
+.vh{background:var(--pg);padding:8px 14px;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.88rem;color:var(--pk);display:flex;align-items:center;gap:6px}
+.vb{padding:10px;min-height:300px;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative}
+
+/* SVG power/data lines */
+.pw-line{stroke:var(--powr);stroke-width:3;stroke-dasharray:8 4;fill:none;opacity:0;transition:opacity .5s}
+.pw-line.on{opacity:1;animation:df 1s linear infinite}
+.dt-line{stroke:var(--dblu);stroke-width:3;stroke-dasharray:6 4;fill:none;opacity:0;transition:opacity .5s}
+.dt-line.on{opacity:1;animation:df .8s linear infinite}
+@keyframes df{to{stroke-dashoffset:-24}}
+
+.comp{transition:all .4s ease}
+.comp.hl{filter:brightness(1.15) drop-shadow(0 0 8px rgba(255,200,50,.5))}
+
+/* Memory grid */
+.mg{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;width:100%;max-width:380px;margin:0 auto}
+.mc{aspect-ratio:1.2;border:1.5px solid var(--pp);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:"SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace;font-size:.5rem;color:var(--txm);background:var(--pg);transition:all .4s ease}
+.mc.bios{background:var(--sky);border-color:var(--skd);color:#1a4a6b}
+.mc.grub{background:#90CAF9;border-color:#1565C0;color:#0D47A1}
+.mc.kern{background:var(--rose);border-color:var(--rosed);color:#6b1a4a}
+.mc.svc{background:var(--yel);border-color:var(--yeld);color:#6b5a1a}
+.mc.app{background:var(--mint);border-color:var(--md);color:var(--mdeep)}
+.mc.ld{animation:cp .5s ease}
+@keyframes cp{0%{transform:scale(1)}50%{transform:scale(1.2);box-shadow:0 0 8px rgba(123,79,191,.4)}100%{transform:scale(1)}}
+
+.ml{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:.65rem;font-weight:700}
+.ml span{display:flex;align-items:center;gap:3px}
+.mld{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+/* CPU Pipeline */
+.pipe{display:flex;flex-direction:column;gap:6px;width:100%;max-width:380px;margin:0 auto}
+.ps{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:var(--pg);border:2px solid transparent;transition:all .4s ease;opacity:.35}
+.ps.act{opacity:1;border-color:var(--pm);background:var(--wh);box-shadow:var(--md-sh)}
+.ps.dn{opacity:.6;border-color:var(--md);background:var(--mint)}
+.pi{font-size:1.4rem;flex-shrink:0}
+.ps h4{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.88rem;color:var(--pk);margin-bottom:1px}
+.ps p{font-size:.72rem;color:var(--txl);line-height:1.4}
+.ps code{font-family:"SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace;font-size:.68rem;color:var(--pm);background:var(--pg);padding:1px 4px;border-radius:4px}
+
+/* Terminal */
+.trm{font-family:"SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace;font-size:.72rem;line-height:1.65;padding:12px 14px;border-radius:12px;min-height:100px;overflow-x:auto;margin-top:8px;width:100%}
+.trm.t0{background:#0a0a28;color:#00ff88}
+.trm.t1{background:#18082e;color:#ffcc00}
+.trm.t2{background:#081a2e;color:#00ccff}
+.trm.t3{background:#2a0818;color:#ff88cc}
+.trm.t4{background:#082e18;color:#88ff00}
+.trm.t5{background:#14143a;color:#cc88ff}
+.cblink{display:inline-block;width:7px;height:12px;background:currentColor;animation:blk 1s step-end infinite;vertical-align:middle}
+@keyframes blk{50%{opacity:0}}
+
+/* Zoom description */
+.zd{padding:10px 14px;background:var(--pg);border-radius:12px;margin-top:8px;font-size:.82rem;color:var(--tx);line-height:1.5;border-left:4px solid var(--pm);width:100%}
+.zd strong{color:var(--pk)}
+.zt{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1rem;color:var(--pk);text-align:center;margin-bottom:8px}
+
+/* Bottom explanation card */
+.expl{background:var(--wh);border-radius:var(--r);padding:18px 20px;box-shadow:var(--md-sh);border:2px solid var(--pp);margin-top:14px}
+.expl.glow{border-color:var(--pm)}
+.expl h3{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1.2rem;color:var(--pk);margin-bottom:4px}
+.stags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.st{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:8px}
+.st-p{background:var(--mint);color:var(--mdeep)}.st-m{background:var(--pch);color:#6b4a1a}.st-s{background:var(--rose);color:#6b1a4a}.st-l{background:var(--sky);color:#1a4a6b}
+.expl .etxt{font-size:.9rem;line-height:1.6;color:var(--txl)}
+.expl .etxt strong{color:var(--tx)}
+.mtip{display:flex;align-items:flex-start;gap:8px;margin-top:10px;padding:10px 12px;background:var(--lav);border-radius:12px}
+.mtip .ta{font-size:1.3rem;flex-shrink:0}
+.mtip p{font-size:.82rem;line-height:1.45;color:var(--pk)}
+
+/* Voltage labels */
+.volt{font-family:"SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace;font-size:.65rem;font-weight:700;fill:currentColor}
+
+.ft{text-align:center;padding:22px;background:var(--pg);margin-top:30px;color:var(--txl);font-size:.82rem;border-top:3px solid var(--lav)}
+.ft strong{color:var(--pk)}
+
+@media(max-width:768px){
+  .hdr{padding:8px 12px;gap:8px}.hdr-logo{height:48px}.hdr h1{font-size:1.1rem}
+  .nav{top:68px;padding:6px 8px}.nt{font-size:.76rem;padding:5px 10px}
+  .sec{padding:12px 8px 24px}
+  .miss{flex-direction:column;align-items:center;text-align:center}
+  .m-b{border-radius:16px}
+  .mg{grid-template-columns:repeat(4,1fr)}
+}
+</style></head><body>
+<header class='hdr'>
+<img class='hdr-logo' src='data:image/jpeg;base64,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+Hzbs0l/FLKswbATYM4I75rEHw/m0y4mk8L+Ir3RYZmLvarGk8CsepVH+7U+m+CLyDxJZ67q3iO61S7tEdIQ0EcSgOCDwo96AOyooooAKWkpaACiiigBKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKWkpaACiiigBKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKWkpaACiiigBKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKWkpaACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==' alt='Alin Li'>
+<div><h1>Alin Li Computer Explorer</h1><div class='sub'>OPEN COMPUTING · The Boot Journey!</div></div>
+</header>
+
+<div class="nav"><div class="nav-t">
+<button class="nt on" data-s="boot">⚡ Boot Journey</button>
+<button class="nt" data-s="parts">🖥️ Parts</button>
+<button class="nt" data-s="quiz">🧠 Quiz</button>
+</div></div>
+
+<!-- ===== BOOT SECTION ===== -->
+<div class="sec on" id="sec-boot">
+<div class="miss">
+<div class="m-av">🤖</div>
+<div class="m-b">
+<div class="mn">Coach Byte says:</div>
+<p>Welcome, explorer! Let's go on the most amazing journey — from the moment you press the <strong>power button</strong> ⏻ to when you see the desktop! We'll watch <span style="color:var(--powr);font-weight:800">⚡ POWER</span> flow through every part, see <span style="color:var(--dblu);font-weight:800">💧 DATA</span> load into memory cell by cell, and <strong>zoom inside the CPU</strong> to see how it thinks! Press <strong>Next Step</strong> to start!</p>
+</div></div>
+
+<h2 class="stitle">⚡ The Boot Journey — Power On to Desktop!</h2>
+
+<div class="leg">
+<span><span class="ld" style="background:var(--powr);box-shadow:0 0 4px var(--powglo)"></span> Power</span>
+<span><span class="ld" style="background:var(--dblu);box-shadow:0 0 4px var(--eleglo)"></span> Data</span>
+<span><span class="ld" style="background:var(--mint)"></span> Physical</span>
+<span><span class="ld" style="background:var(--pch)"></span> Memory</span>
+<span><span class="ld" style="background:var(--rose)"></span> Storage</span>
+<span><span class="ld" style="background:var(--sky)"></span> Software</span>
+</div>
+
+<div class="prog"><div class="pfill" id="bf"></div></div>
+<div class="slbl" id="bl">Press Next Step to begin the journey!</div>
+
+<div class="ctrls">
+<button class="btn bp" id="bA">▶ Auto Play</button>
+<button class="btn ba" id="bN">⏭ Next Step</button>
+<button class="btn bs" id="bR">🔄 Reset</button>
+</div>
+
+<div class="blay">
+<!-- LEFT: Overview -->
+<div class="vp" id="vL">
+<div class="vh"><span>🖥️</span> Computer Overview</div>
+<div class="vb" id="vLb">
+<svg viewBox="0 0 460 400" width="100%" id="oSvg">
+<rect x="5" y="5" width="450" height="390" rx="14" fill="#eae6f2" stroke="#c0b8d4" stroke-width="2"/>
+<text x="230" y="24" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#9B8AB5">INSIDE THE COMPUTER</text>
+
+<!-- Motherboard bg -->
+<rect x="25" y="32" width="280" height="338" rx="10" fill="#C8E6C9" stroke="#66BB6A" stroke-width="1.5" opacity=".5"/>
+<text x="165" y="48" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="#2E7D32">MOTHERBOARD</text>
+
+<!-- PSU -->
+<g id="c-psu" class="comp"><rect x="330" y="35" width="110" height="65" rx="8" fill="#FFE082" stroke="#F9A825" stroke-width="2"/><text x="385" y="60" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#E65100">🔋 PSU</text><text x="385" y="76" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="#795548">Power Supply</text>
+<!-- Voltage labels -->
+<text x="345" y="92" font-size="6" font-family="Consolas" fill="#BF360C" class="volt">12V 5V 3.3V</text>
+</g>
+
+<!-- CPU -->
+<g id="c-cpu" class="comp"><rect x="45" y="62" width="130" height="100" rx="8" fill="#CE93D8" stroke="#8E24AA" stroke-width="2"/><text x="110" y="95" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#4A148C">🧠 CPU</text><text x="110" y="112" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="#6A1B9A">The Brain</text>
+<!-- L1 Cache -->
+<rect x="52" y="125" width="116" height="22" rx="4" fill="#F3E5F5" stroke="#BA68C8" stroke-width="1"/>
+<text x="110" y="140" text-anchor="middle" font-family="Consolas" font-size="6" fill="#7B1FA2">L1 CACHE (1ns!)</text>
+<!-- Pipeline labels -->
+<rect x="52" y="148" width="36" height="10" rx="2" fill="#E1BEE7"/><text x="70" y="156" text-anchor="middle" font-size="5" font-family="Consolas" fill="#6A1B9A">FETCH</text>
+<rect x="91" y="148" width="36" height="10" rx="2" fill="#E1BEE7"/><text x="109" y="156" text-anchor="middle" font-size="5" font-family="Consolas" fill="#6A1B9A">DECODE</text>
+<rect x="130" y="148" width="38" height="10" rx="2" fill="#E1BEE7"/><text x="149" y="156" text-anchor="middle" font-size="5" font-family="Consolas" fill="#6A1B9A">EXECUTE</text>
+</g>
+
+<!-- FAN -->
+<g id="c-fan" class="comp"><rect x="185" y="72" width="50" height="40" rx="6" fill="#90A4AE" stroke="#546E7A" stroke-width="1.5"/><text x="210" y="97" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="#263238">❄️Fan</text></g>
+
+<!-- RAM -->
+<g id="c-ram" class="comp"><rect x="45" y="178" width="190" height="55" rx="8" fill="#FFCC80" stroke="#EF6C00" stroke-width="2"/><text x="140" y="200" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#BF360C">⚡ RAM (8GB)</text><text x="140" y="215" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="#E65100">Temporary Memory</text>
+<!-- RAM cells tiny -->
+<g id="rCells"><rect x="52" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r0"/><rect x="64" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r1"/><rect x="76" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r2"/><rect x="88" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r3"/><rect x="100" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r4"/><rect x="112" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r5"/><rect x="124" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r6"/><rect x="136" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r7"/><rect x="148" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r8"/><rect x="160" y="220" width="10" height="5" rx="1" fill="#FFE0B2" stroke="#EF6C00" stroke-width=".5" id="r9"/></g>
+</g>
+
+<!-- BIOS -->
+<g id="c-bios" class="comp"><rect x="248" y="178" width="50" height="32" rx="6" fill="#90CAF9" stroke="#1565C0" stroke-width="1.5"/><circle cx="256" cy="194" r="2.5" fill="#F44336"/><text x="273" y="198" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="#0D47A1">📋BIOS</text></g>
+
+<!-- GPU -->
+<g id="c-gpu" class="comp"><rect x="45" y="250" width="190" height="45" rx="8" fill="#80DEEA" stroke="#00838F" stroke-width="2"/><text x="140" y="275" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#004D40">🎮 GPU (Graphics)</text><text x="140" y="288" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="#006064">10,000+ tiny painters!</text></g>
+
+<!-- SSD -->
+<g id="c-ssd" class="comp"><rect x="45" y="310" width="120" height="45" rx="8" fill="#F48FB1" stroke="#AD1457" stroke-width="2"/><text x="105" y="335" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#880E4F">💾 SSD</text><text x="105" y="348" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="#AD1457">Permanent Storage</text></g>
+
+<!-- Monitor -->
+<g id="c-mon" class="comp"><rect x="330" y="125" width="115" height="90" rx="8" fill="#B0BEC5" stroke="#546E7A" stroke-width="2"/><rect x="338" y="133" width="99" height="64" rx="4" fill="#263238" id="mScr"/><text x="388" y="170" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#78909C" id="mTxt">🖥️</text><rect x="375" y="217" width="25" height="8" rx="2" fill="#78909C"/></g>
+
+<!-- Keyboard -->
+<g id="c-kb" class="comp"><rect x="330" y="240" width="115" height="30" rx="6" fill="#ECEFF1" stroke="#90A4AE" stroke-width="1.5"/><text x="388" y="260" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="#455A64">⌨️ Keyboard</text></g>
+
+<!-- Speaker -->
+<g id="c-spk" class="comp"><rect x="180" y="310" width="55" height="40" rx="6" fill="#E0E0E0" stroke="#9E9E9E" stroke-width="1.5"/><text x="208" y="335" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="#616161">🔊Beep</text></g>
+
+<!-- NIC / WiFi / Bluetooth -->
+<g id="c-nic" class="comp">
+<rect x="248" y="310" width="55" height="48" rx="6" fill="#B2EBF2" stroke="#00838F" stroke-width="1.5"/>
+<text x="276" y="327" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="#004D40">🔌 NIC</text>
+<text x="276" y="338" text-anchor="middle" font-family="Segoe UI" font-size="6" fill="#00838F">📶WiFi</text>
+<text x="276" y="349" text-anchor="middle" font-family="Segoe UI" font-size="6" fill="#1565C0">🔵BT</text>
+</g>
+
+<!-- Crystal Oscillator (Clock) -->
+<g id="c-clk" class="comp">
+<rect x="248" y="130" width="55" height="28" rx="5" fill="#B2EBF2" stroke="#00838F" stroke-width="1.5"/>
+<text x="276" y="145" text-anchor="middle" font-family="Segoe UI" font-size="6" fill="#004D40">⏱️ CLOCK</text>
+<text x="276" y="153" text-anchor="middle" font-family="Consolas" font-size="5" fill="#00695C">3.5 GHz</text>
+</g>
+<!-- Clock signal line -->
+<path class="dt-line" id="d-clk" d="M248,144 L175,120"/>
+
+<!-- POWER LINES -->
+<path class="pw-line" id="pw1" d="M330,65 L260,65 L175,95"/>
+<path class="pw-line" id="pw2" d="M330,70 L245,195"/>
+<path class="pw-line" id="pw3" d="M330,75 L235,205"/>
+<path class="pw-line" id="pw4" d="M330,80 L235,270"/>
+<path class="pw-line" id="pw5" d="M330,85 L165,330"/>
+<path class="pw-line" id="pw6" d="M330,90 L338,160"/>
+<!-- Voltage annotations on power lines (show on step 1-2) -->
+<text id="vl12" x="255" y="60" font-size="7" font-family="Consolas" fill="#E65100" opacity="0">12V→</text>
+<text id="vl5" x="280" y="190" font-size="7" font-family="Consolas" fill="#E65100" opacity="0">5V→</text>
+<text id="vl33" x="280" y="210" font-size="7" font-family="Consolas" fill="#E65100" opacity="0">3.3V→</text>
+
+<!-- DATA LINES -->
+<path class="dt-line" id="d-bc" d="M273,178 L160,130"/>
+<path class="dt-line" id="d-rc" d="M140,178 L120,162"/>
+<path class="dt-line" id="d-sr" d="M120,310 L120,233"/>
+<path class="dt-line" id="d-cg" d="M130,162 L130,250"/>
+<path class="dt-line" id="d-gm" d="M235,272 L338,165"/>
+<path class="dt-line" id="d-sc" d="M100,310 L100,162"/>
+</svg>
+</div></div>
+
+<!-- RIGHT: Zoom -->
+<div class="vp" id="vR">
+<div class="vh"><span>🔍</span> <span id="zHead">Zoom View — Look Inside!</span></div>
+<div class="vb" id="zBody">
+<div style="text-align:center;color:var(--txm);padding:30px">
+<div style="font-size:3.5rem;margin-bottom:10px">🔬</div>
+<p style="font-size:.95rem">Press <strong>Next Step</strong> to start!<br>This panel zooms into different parts<br>as the boot progresses.</p>
+</div>
+</div></div>
+</div>
+
+<!-- Bottom Explanation -->
+<div class="expl" id="exC">
+<h3 id="exT">🚀 Ready to Begin!</h3>
+<div class="stags" id="exTags"></div>
+<div class="etxt" id="exTxt">Press <strong>Next Step</strong> or <strong>Auto Play</strong> to follow each step of the boot process. We'll see power flow, data move, memory fill up, and the CPU think!</div>
+<div class="mtip" id="exTip" style="display:none"><div class="ta">🤖</div><p id="exTipT"></p></div>
+</div>
+</div>
+
+<!-- ===== PARTS SECTION ===== -->
+<div class="sec" id="sec-parts">
+<div class="miss"><div class="m-av">🤖</div><div class="m-b"><div class="mn">Coach Byte says:</div><p>Every computer part has a special job — like members of a team! <strong>Click any card to flip it</strong> and learn more!</p></div></div>
+<h2 class="stitle">🖥️ Computer Parts Explorer</h2>
+<div id="pGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px"></div>
+</div>
+
+<!-- ===== QUIZ SECTION ===== -->
+<div class="sec" id="sec-quiz">
+<div class="miss"><div class="m-av">🤖</div><div class="m-b"><div class="mn">Coach Byte says:</div><p>Let's test what you learned! Try to get <strong>Gold 🥇</strong> by scoring 90%+!</p></div></div>
+<h2 class="stitle">🧠 Quiz Time!</h2>
+<div id="qBox"></div>
+<div id="qF" style="display:none;text-align:center;padding:24px;background:var(--lav);border-radius:18px;margin-top:14px"><h3 id="qFT" style="font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1.6rem;color:var(--pk)"></h3><p id="qFM" style="color:var(--txl);margin-top:4px"></p></div>
+</div>
+
+<footer class="ft"><strong>Alin Li for Computer Services</strong> · Reviving the spirit of open computing<br>Made with 💜 for young tech explorers!<br><a href="credits/computer-explorer.html" style="color:inherit;opacity:.75;text-decoration:underline;font-size:.85em">Open-source credits</a></footer>
+
+<script>
+/* NAV */
+document.querySelectorAll('.nt').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.nt').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('sec-'+b.dataset.s).classList.add('on')})});
+
+/* BOOT DATA */
+const S=[
+{n:1,t:"⚡ Power Button Pressed!",tags:['st-p'],
+txt:"You press the <strong>power button ⏻</strong>! The <strong>Power Supply (PSU) 🔋</strong> wakes up and converts dangerous high-voltage electricity from the wall into safe, low voltages:<br>• <strong>12V</strong> → for CPU and GPU (the heavy workers)<br>• <strong>5V</strong> → for USB ports<br>• <strong>3.3V</strong> → for RAM and BIOS chip<br>Then it sends a <strong>\"Power Good\" ✅</strong> signal to the motherboard!",
+tip:"Think of the PSU like a water treatment plant — it takes strong, dangerous water (220V electricity) from the river (wall outlet) and makes it safe and clean for every house (computer part) to drink!",
+zh:"🔋 Inside the Power Supply — Voltage Conversion",
+ov:()=>{hl('c-psu');pw(['pw1','pw2','pw3','pw4','pw5','pw6']);vls(1)},
+zfn:zPSU,tc:'t0',
+ln:["[POWER] ⏻ Button pressed!","[PSU]   Converting AC 220V → DC...","[PSU]   12V ──→ CPU, GPU ✅","[PSU]   5V  ──→ USB ports ✅","[PSU]   3.3V ─→ RAM, BIOS ✅","[PSU]   ★ POWER GOOD signal sent!"]},
+
+{n:2,t:"🔌 Motherboard Powers Up!",tags:['st-p','st-m'],
+txt:"The motherboard receives power and distributes it through <strong>copper traces</strong> (tiny wires printed on the green board) to every component. Each part gets its own voltage. The <strong>CPU gets 12V</strong> and its <strong>billions of transistors</strong> start switching on!",
+tip:"The motherboard is like a city road network — electricity travels through copper traces like cars on roads, reaching every building (part). Each building needs a different amount of power — a hospital needs more than a small shop!",
+zh:"⚡ Power Reaching Every Part!",
+ov:()=>{hl('c-psu');hl('c-cpu');hl('c-ram');hl('c-gpu');hl('c-bios');hl('c-ssd');pw(['pw1','pw2','pw3','pw4','pw5','pw6']);vls(1)},
+zfn:zPowerAll,tc:'t0',
+ln:["[MOBO]  Power distributed!","[12V] ──→ CPU .............. ✅","[3.3V]──→ RAM .............. ✅","[12V] ──→ GPU .............. ✅","[3.3V]──→ BIOS chip ........ ✅","[5V]  ──→ USB ports ........ ✅","[CPU]   ★ Transistors activating!"]},
+
+{n:3,t:"🧠 CPU Wakes Up — EMPTY!",tags:['st-p','st-l'],
+txt:"The CPU wakes up but has <strong>NO instructions — it's completely empty!</strong> Like a student arriving at school with no books. The very first thing it does is look at a hard-wired address <code>0xFFFFFFF0</code> which points to the <strong>BIOS chip</strong>. The BIOS firmware flows into the CPU!",
+tip:"Imagine waking up with amnesia! You'd look at the note on your bedside table (BIOS) that says 'Read this first!' The CPU is hard-wired to always check that one address first — it can never forget where the note is!",
+zh:"🧠 Inside CPU — Empty → First Instructions!",
+ov:()=>{hl('c-cpu');hl('c-bios');dt(['d-bc'])},
+zfn:zCPUFetch,tc:'t0',
+ln:["[CPU]   Waking up... empty brain!","[CPU]   Register A = 0x00000000","[CPU]   Register B = 0x00000000","[CPU]   Looking at 0xFFFFFFF0...","[CPU]   → Points to BIOS chip!","[BIOS]  Sending firmware → CPU","[CPU]   ★ First instructions loaded!"]},
+
+{n:4,t:"📋 BIOS Runs POST Test!",tags:['st-l','st-p','st-m'],
+txt:"BIOS runs <strong>POST (Power-On Self-Test)</strong> — it checks every part like a teacher doing attendance!<br><strong>CPU?</strong> Here! ✅<br><strong>RAM?</strong> Here! ✅ (8GB)<br><strong>GPU?</strong> Here! ✅<br><strong>Keyboard?</strong> Here! ✅<br><strong>SSD?</strong> Here! ✅<br>If any part is missing → BIOS plays <strong>error BEEP codes</strong> through the speaker! 🔊",
+tip:"POST is like a teacher doing attendance on the first day: 'CPU?' — 'Here, teacher!' 'RAM?' — 'Here!' If someone is absent, the teacher tells the principal (you!) by ringing the bell (beep codes)!",
+zh:"🔍 POST — Roll Call for All Parts!",
+ov:()=>{hl('c-bios');dt(['d-bc']);setTimeout(()=>hl('c-cpu'),300);setTimeout(()=>hl('c-ram'),600);setTimeout(()=>hl('c-gpu'),900);setTimeout(()=>hl('c-ssd'),1200);setTimeout(()=>hl('c-kb'),1500);setTimeout(()=>hl('c-spk'),1800)},
+zfn:zPOST,tc:'t1',
+ln:["[POST]  ★ Power-On Self-Test ★","[POST]  CPU ............ ✅ OK","[POST]  RAM ............ ✅ 8GB","[POST]  GPU ............ ✅ Found","[POST]  Keyboard ....... ✅ Connected","[POST]  SSD ............ ✅ 256GB","[POST]  Speaker ........ ✅ Ready","[POST]  ★ All checks PASSED! ★"]},
+
+{n:5,t:"⚡ RAM Initializes — All Empty!",tags:['st-m','st-p'],
+txt:"BIOS initializes RAM — testing each memory stick. <strong>RAM starts COMPLETELY EMPTY!</strong> All 8 billion cells contain nothing. When you turn off the computer, RAM gets erased instantly. That's why it's called <strong>volatile memory</strong>. Below you can see each memory address is empty (0x0000).",
+tip:"RAM is like a whiteboard in your classroom — every morning you arrive and it's completely clean. You write today's lessons on it. When school ends (power off), the janitor erases everything! That's why you save important work to the SSD — it's like writing in your notebook that you keep forever!",
+zh:"⚡ RAM Memory Map — 32 Cells, All Empty!",
+ov:()=>{hl('c-ram');for(let i=0;i<10;i++)setTimeout(()=>document.getElementById('r'+i).setAttribute('fill','#FFE0B2'),i*100)},
+zfn:zRAMEmpty,tc:'t1',
+ln:["[RAM]   Detecting memory sticks...","[RAM]   Slot 1: 4GB DDR4 3200MHz ✅","[RAM]   Slot 2: 4GB DDR4 3200MHz ✅","[RAM]   Total: 8,589,934,592 bytes","[RAM]   Testing cell 0x0000... OK","[RAM]   Testing cell 0xFFFF... OK","[RAM]   ★ All cells EMPTY and ready!"]},
+
+{n:6,t:"🔍 Finding the Boot Drive!",tags:['st-l','st-s'],
+txt:"BIOS checks the <strong>boot order</strong> — a priority list of where to look for the operating system:<br>1️⃣ USB Drive → ❌ Not found<br>2️⃣ NVMe SSD → ✅ <strong>FOUND!</strong><br>It reads the SSD's <strong>boot sector</strong> (the very first block of data) and finds the <strong>GRUB bootloader</strong> program!",
+tip:"It's like looking for your homework — you check your bag first, then your desk, then your shelf. BIOS checks USB first (maybe you're installing Linux!), then SSD, then HDD. First place with an OS wins!",
+zh:"💾 SSD Chips Light Up — Reading Boot Sector!",
+ov:()=>{hl('c-bios');hl('c-ssd');dt(['d-sc'])},
+zfn:zSSDSearch,tc:'t2',
+ln:["[BIOS]  Checking boot order:","[BIOS]  1. USB ........... ❌ Empty","[BIOS]  2. NVMe SSD ...... 🔍 Checking...","[SSD]   Reading sector 0 (boot sector)","[SSD]   Found: GRUB bootloader!","[BIOS]  ★ Handing control to GRUB!"]},
+
+{n:7,t:"📦 Bootloader → RAM!",tags:['st-l','st-s','st-m'],
+txt:"The <strong>GRUB bootloader</strong> copies from SSD → RAM! Watch the memory cells fill up! GRUB is small but powerful — it knows where the Linux kernel lives on the SSD. If you have multiple operating systems, GRUB shows a menu to choose!",
+tip:"GRUB is like a helpful librarian: 'Looking for Linux? It's on shelf 3, section 42!' Then it carries the book (kernel) to your desk (RAM) so you can read it!",
+zh:"📦 SSD → RAM: Loading GRUB Bootloader!",
+ov:()=>{hl('c-ssd');hl('c-ram');dt(['d-sr']);fRC([0,1],'#90CAF9')},
+zfn:()=>zRAMLoad('grub'),tc:'t2',
+ln:["[GRUB]  Loading SSD → RAM...","[RAM]   Addr 0x0000: GRUB code ✅","[RAM]   Addr 0x0100: GRUB data ✅","[GRUB]  ┌──────────────────────┐","[GRUB]  │ ▶ Linux Mint 22      │","[GRUB]  │   Ubuntu 24.04       │","[GRUB]  └──────────────────────┘","[GRUB]  ★ Loading Linux kernel..."]},
+
+{n:8,t:"🐧 Linux Kernel → RAM!",tags:['st-l','st-m','st-s'],
+txt:"The <strong>Linux kernel</strong> — the HEART of the OS — copies from SSD into RAM! It's a big program that fills MANY memory cells (see the pink cells filling up!). The kernel will manage CPU time, memory allocation, file access, and every device.",
+tip:"The kernel is like a school principal — once they arrive, they manage every teacher (driver), every classroom (memory section), every schedule (CPU time), and every student (program). Nothing works without the principal!",
+zh:"🐧 Kernel Filling RAM — Watch the Cells!",
+ov:()=>{hl('c-ssd');hl('c-ram');hl('c-cpu');dt(['d-sr','d-rc']);fRC([2,3,4,5,6],'#F48FB1')},
+zfn:()=>zRAMLoad('kernel'),tc:'t3',
+ln:["[KERNEL] Loading Linux 6.8.0...","[SSD→RAM] 0x0200: Core code ✅","[SSD→RAM] 0x0300: Memory mgr ✅","[SSD→RAM] 0x0400: Scheduler ✅","[SSD→RAM] 0x0500: File system ✅","[SSD→RAM] 0x0600: Device mgr ✅","[CPU]   ★ Executing kernel code!"]},
+
+{n:9,t:"🧠 CPU Executes — The Pipeline!",tags:['st-l','st-p'],
+txt:"The CPU starts <strong>executing kernel instructions</strong>! Each instruction goes through a 3-stage pipeline:<br><strong>① FETCH</strong> — Get the instruction from RAM<br><strong>② DECODE</strong> — Understand what it means<br><strong>③ EXECUTE</strong> — Do the actual work!<br>All 3 stages run <em>simultaneously</em> on different instructions — like an assembly line! This happens <strong>billions of times per second!</strong>",
+tip:"The CPU pipeline is like a sandwich shop: Station 1 reads the order (FETCH), Station 2 prepares ingredients (DECODE), Station 3 makes the sandwich (EXECUTE). While sandwich #3 is being made, sandwich #4 is being prepared, and sandwich #5's order is being read — all at the same time!",
+zh:"🧠 Inside CPU — The 3-Stage Pipeline!",
+ov:()=>{hl('c-cpu');hl('c-ram');dt(['d-rc'])},
+zfn:zPipeline,tc:'t3',
+ln:["[CPU]   ★ Pipeline active ★","[FETCH]   ← RAM 0x0200","[DECODE]  → 'Load display driver'","[EXECUTE] → Writing to GPU memory!","[FETCH]   ← RAM 0x0204","[DECODE]  → 'Init network card'","[EXECUTE] → Enabling WiFi!","[CPU]   ...3 billion cycles/sec!"]},
+
+{n:10,t:"⏱️ The CPU Clock — Heartbeat!",tags:['st-p','st-l'],
+txt:"But what makes those pipeline stages tick? A tiny <strong>crystal oscillator</strong> on the motherboard vibrates <strong>3.5 billion times per second (3.5 GHz!)</strong>. Each vibration is called a <strong>clock cycle</strong> — one 'tick'. On every tick, the CPU does one step of work.<br><br><strong>Higher GHz = More ticks = More work = FASTER!</strong><br>• 1 GHz = 1 billion ticks/sec (old, slow)<br>• 3.5 GHz = 3.5 billion ticks/sec (modern!)<br>• 5 GHz = 5 billion ticks/sec (super fast gaming CPU!)",
+tip:"The clock is like a drummer in a marching band — everyone walks in sync with the beat! 🥁 Faster drumming = everyone marches faster. A 3.5 GHz CPU gets 3.5 billion drum beats every second. A 5 GHz CPU gets even MORE beats — so it can do more work in the same time! That's why gamers want high GHz CPUs!",
+zh:"⏱️ Crystal Oscillator — The CPU's Heartbeat!",
+ov:()=>{hl('c-cpu');hl('c-clk');dt(['d-clk','d-rc'])},
+zfn:zClock,tc:'t3',
+ln:["[CLOCK] Crystal oscillator active!","[CLOCK] Frequency: 3,500,000,000 Hz","[CLOCK] = 3.5 GHz","[CLOCK] Each tick → 1 pipeline step","[CPU]   Tick 1: FETCH ✓","[CPU]   Tick 2: DECODE ✓","[CPU]   Tick 3: EXECUTE ✓","[CPU]   ...3.5 billion ticks/second!"]},
+
+{n:11,t:"⚙️ Drivers & Services Load!",tags:['st-l','st-m'],
+txt:"The kernel loads <strong>device drivers</strong> (translators for each hardware) and starts <strong>system services</strong>: NetworkManager for WiFi/Ethernet, PulseAudio for sound, Bluetooth daemon, Display Manager for the screen. The <strong>NIC, WiFi, and Bluetooth</strong> all get their drivers loaded now!",
+tip:"Drivers are like translators at the United Nations — the GPU speaks 'graphics language', the WiFi card speaks 'radio language', Bluetooth speaks 'short-range language'. Drivers translate everything so the kernel can understand all of them!",
+zh:"⚙️ Services Filling RAM — Almost Full!",
+ov:()=>{hl('c-cpu');hl('c-ram');hl('c-gpu');hl('c-ssd');hl('c-nic');dt(['d-sr','d-rc','d-cg']);fRC([7,8,9],'#EFE8A8')},
+zfn:()=>zRAMLoad('services'),tc:'t4',
+ln:["[SYSTEMD] Starting services...","[SSD→RAM] Display driver ✅","[SSD→RAM] WiFi driver ✅","[SSD→RAM] Bluetooth driver ✅","[SYSTEMD] NetworkManager .... ✅","[SYSTEMD] PulseAudio ........ ✅","[SYSTEMD] Bluetooth daemon .. ✅","[SYSTEMD] ★ All services ready!"]},
+
+{n:12,t:"🖥️ Login Screen Appears!",tags:['st-l','st-p'],
+txt:"The <strong>Display Manager</strong> tells the GPU to draw the login screen! The GPU's <strong>10,000+ tiny cores</strong> each paint ONE pixel. Together they paint <strong>2 million+ pixels, 60 times per second!</strong> The image flows through HDMI to the monitor. You see the login screen! ✨",
+tip:"The GPU is like an army of 10,000 tiny painters — each one paints just ONE dot (pixel) on the screen. Together they paint the whole picture 60 times every second! That's why games look so smooth!",
+zh:"🎮 GPU Drawing Pixels → Monitor!",
+ov:()=>{hl('c-gpu');hl('c-mon');hl('c-kb');dt(['d-cg','d-gm']);document.getElementById('mScr').setAttribute('fill','#1565C0');document.getElementById('mTxt').textContent='🔐 Login';document.getElementById('mTxt').setAttribute('fill','#fff')},
+zfn:zGPU,tc:'t5',
+ln:["[GPU]   Rendering login screen...","[GPU]   Processing 2,073,600 pixels","[GPU]   Each of 10,000 cores painting!","[GPU]   → HDMI → Monitor!","[DISPLAY] ┌──────────────────────┐","[DISPLAY] │  Welcome to Linux!   │","[DISPLAY] │  User: student       │","[DISPLAY] │  Pass: ●●●●●●●       │","[DISPLAY] └──────────────────────┘"]},
+
+{n:13,t:"🎉 Desktop Ready!",tags:['st-l','st-m','st-s','st-p'],
+txt:"After login, the <strong>desktop environment</strong> loads! Apps copy from SSD → RAM (see all the green cells!). The CPU executes code. The GPU draws your desktop. <strong>Your computer is FULLY BOOTED! 🎉</strong><br><br>The whole journey took ~15 seconds but involved <strong>BILLIONS of operations!</strong> Every part worked as a team!",
+tip:"🎉 TEAMWORK! PSU gave power, BIOS checked everything, SSD stored the OS, RAM held active data, CPU processed billions of instructions, GPU drew the screen, and the cooling fan kept everyone from overheating! Without ANY one of these parts, the computer can't work. They're the ultimate team!",
+zh:"🎉 Everything Working Together!",
+ov:()=>{hlAll();dt(['d-rc','d-cg','d-gm']);pw(['pw1','pw2','pw3','pw4','pw5','pw6']);for(let i=0;i<10;i++)document.getElementById('r'+i).setAttribute('fill','#A8EFCF');document.getElementById('mScr').setAttribute('fill','#1B5E20');document.getElementById('mTxt').textContent='🎉 Ready!';document.getElementById('mTxt').setAttribute('fill','#fff')},
+zfn:zFinal,tc:'t4',
+ln:["[DESKTOP] Loading environment...","[SSD→RAM] File Manager ✅","[SSD→RAM] Firefox browser ✅","[GPU]   Drawing desktop...","[DESKTOP] ┌──────────────────────────┐","[DESKTOP] │ 📁 Files  🌐 Firefox    │","[DESKTOP] │      🎉 Ready! 🎉       │","[DESKTOP] └─[Menu]───────────[12:00]┘","","★ BOOT COMPLETE in ~15 seconds! ★"]}
+];
+
+/* BOOT ENGINE */
+let bI=-1,bAI=null,bRun=false;
+function bNext(){if(bI>=S.length-1)return;bI++;doStep()}
+function bAuto(){if(bRun)return;bRun=true;E('bA').disabled=true;bAI=setInterval(()=>{if(bI>=S.length-1){clearInterval(bAI);bRun=false;return}bNext()},3500)}
+function bReset(){if(bAI){clearInterval(bAI);bRun=false}bI=-1;E('bf').style.width='0%';E('bl').textContent='Press Next Step to begin!';E('bA').disabled=false;E('bN').disabled=false;rOv();E('zBody').innerHTML='<div style="text-align:center;color:var(--txm);padding:30px"><div style="font-size:3.5rem;margin-bottom:10px">🔬</div><p>Press Next Step to start!</p></div>';E('zHead').textContent='Zoom View — Look Inside!';E('exT').innerHTML='🚀 Ready to Begin!';E('exTags').innerHTML='';E('exTxt').innerHTML='Press <strong>Next Step</strong> or <strong>Auto Play</strong>!';E('exTip').style.display='none';E('vL').classList.remove('glow');E('vR').classList.remove('glow');E('exC').classList.remove('glow');E('mScr').setAttribute('fill','#263238');E('mTxt').textContent='🖥️';E('mTxt').setAttribute('fill','#78909C');vls(0)}
+
+function doStep(){
+const s=S[bI];
+E('bf').style.width=((bI+1)/S.length*100)+'%';
+E('bl').textContent=`Step ${s.n}/${S.length}: ${s.t}`;
+rOv();s.ov();
+E('vL').classList.add('glow');E('vR').classList.add('glow');
+E('zHead').textContent=s.zh;s.zfn();
+E('exC').classList.add('glow');
+E('exT').innerHTML=s.t;
+E('exTags').innerHTML=s.tags.map(t=>`<span class="st ${t}">${t.replace('st-','')}</span>`).join('');
+E('exTxt').innerHTML=s.txt;
+E('exTip').style.display='flex';E('exTipT').textContent=s.tip;
+typeTerm(s);
+if(bI>=S.length-1){E('bN').disabled=true;E('bA').disabled=true;if(bAI){clearInterval(bAI);bRun=false}}
+}
+
+/* HELPERS */
+function E(id){return document.getElementById(id)}
+function rOv(){document.querySelectorAll('.comp').forEach(c=>c.classList.remove('hl'));document.querySelectorAll('.pw-line,.dt-line').forEach(l=>l.classList.remove('on'));for(let i=0;i<10;i++)E('r'+i).setAttribute('fill','#FFE0B2');vls(0)}
+function hl(id){E(id).classList.add('hl')}
+function hlAll(){document.querySelectorAll('.comp').forEach(c=>c.classList.add('hl'))}
+function pw(ids){ids.forEach(id=>E(id).classList.add('on'))}
+function dt(ids){ids.forEach(id=>E(id).classList.add('on'))}
+function fRC(idxs,color){idxs.forEach((i,n)=>setTimeout(()=>E('r'+i).setAttribute('fill',color),n*200))}
+function vls(show){['vl12','vl5','vl33'].forEach(id=>E(id).setAttribute('opacity',show?'1':'0'))}
+
+function typeTerm(s){
+  const existing=E('trmBox');if(existing)existing.remove();
+  const z=E('zBody');
+  const d=document.createElement('div');d.className='trm '+s.tc;d.id='trmBox';
+  z.appendChild(d);
+  s.ln.forEach((l,i)=>setTimeout(()=>{d.innerHTML+=l+'\n';if(i===s.ln.length-1)d.innerHTML+='<span class="cblink"></span>'},i*180));
+}
+
+/* ZOOM RENDERERS */
+function zPSU(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">🔋 PSU: Converting Electricity!</div>
+  <svg viewBox="0 0 400 160" width="100%">
+    <rect x="10" y="40" width="90" height="55" rx="8" fill="#FFCDD2" stroke="#E53935" stroke-width="2"/>
+    <text x="55" y="62" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#B71C1C">⚡ WALL</text>
+    <text x="55" y="78" text-anchor="middle" font-family="Consolas" font-size="9" fill="#C62828">220V AC</text>
+    <text x="55" y="88" text-anchor="middle" font-family="Segoe UI" font-size="6" fill="#E53935">⚠️ DANGEROUS!</text>
+    <path d="M100,67 L145,67" stroke="#FF5722" stroke-width="3" stroke-dasharray="6 3"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur=".7s" repeatCount="indefinite"/></path>
+    <rect x="145" y="20" width="100" height="100" rx="10" fill="#FFF9C4" stroke="#F9A825" stroke-width="2.5"/>
+    <text x="195" y="52" text-anchor="middle" font-family="Segoe UI" font-size="13" fill="#E65100">🔋 PSU</text>
+    <text x="195" y="68" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="#BF360C">Power Supply Unit</text>
+    <text x="195" y="82" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="#795548">AC → DC</text>
+    <text x="195" y="108" text-anchor="middle" font-family="Segoe UI" font-size="6" fill="#4CAF50">✅ SAFE!</text>
+    ${['12V → CPU, GPU','5V → USB ports','3.3V → RAM, BIOS'].map((l,i)=>`<line x1="245" y1="${40+i*25}" x2="300" y2="${40+i*25}" stroke="${['#E65100','#FF9800','#FFB74D'][i]}" stroke-width="2.5" stroke-dasharray="4 2"><animate attributeName="stroke-dashoffset" from="0" to="-12" dur="${.5+i*.1}s" repeatCount="indefinite"/></line><text x="305" y="${44+i*25}" font-family="Consolas" font-size="8" fill="${['#BF360C','#E65100','#FF8F00'][i]}">${l}</text>`).join('')}
+  </svg>
+  <div class="zd"><strong>The PSU</strong> takes dangerous 220V AC from the wall and converts it into safe DC voltages. Each part needs a specific voltage — like how different appliances in your house need different amounts of power!</div></div>`;
+}
+
+function zPowerAll(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">⚡ Power Flowing to Every Part!</div>
+  <svg viewBox="0 0 400 180" width="100%">
+    <rect x="155" y="5" width="80" height="40" rx="8" fill="#FFF176" stroke="#F9A825" stroke-width="2"/>
+    <text x="195" y="30" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#E65100">🔋 PSU</text>
+    ${[{l:'🧠 CPU',v:'12V',x:15},{l:'⚡ RAM',v:'3.3V',x:85},{l:'🎮 GPU',v:'12V',x:155},{l:'📋 BIOS',v:'3.3V',x:225},{l:'💾 SSD',v:'5V',x:295}].map((p,i)=>`
+    <line x1="195" y1="45" x2="${p.x+40}" y2="100" stroke="#FFB74D" stroke-width="2" stroke-dasharray="5 3"><animate attributeName="stroke-dashoffset" from="0" to="-16" dur="${.4+i*.12}s" repeatCount="indefinite"/></line>
+    <rect x="${p.x}" y="100" width="80" height="42" rx="6" fill="#FFF9C4" stroke="#F9A825" stroke-width="1.5"/>
+    <text x="${p.x+40}" y="118" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#BF360C">${p.l}</text>
+    <text x="${p.x+40}" y="132" text-anchor="middle" font-family="Consolas" font-size="7" fill="#4CAF50">${p.v} ✅ ON</text>`).join('')}
+  </svg>
+  <div class="zd">Every part is now powered! The <strong>12V rail</strong> goes to power-hungry parts (CPU, GPU). The <strong>3.3V rail</strong> goes to delicate chips (RAM, BIOS). The <strong>5V rail</strong> powers USB and storage.</div></div>`;
+}
+
+function zCPUFetch(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">🧠 CPU's Very First Instruction!</div>
+  <div class="pipe">
+    <div class="ps act"><div class="pi">📭</div><div><h4>CPU Wakes Up — EMPTY!</h4><p>All registers = 0x00000000. No instructions. No data. A blank brain!</p></div></div>
+    <div class="ps act"><div class="pi">📍</div><div><h4>Hard-wired: Check 0xFFFFFFF0</h4><p>This address is built into the chip. The CPU <em>always</em> starts here — it can never forget!</p></div></div>
+    <div class="ps act"><div class="pi">📋</div><div><h4>Address → BIOS Chip!</h4><p>0xFFFFFFF0 points to the BIOS ROM chip on the motherboard. BIOS firmware flows in!</p></div></div>
+    <div class="ps act"><div class="pi">🚀</div><div><h4>First Instructions Loaded!</h4><p>The CPU now has code to run. It starts executing the BIOS program!</p></div></div>
+  </div></div>`;
+}
+
+function zPOST(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">🔍 POST — Teacher's Roll Call!</div><div id="postC" style="display:flex;flex-direction:column;gap:6px;max-width:350px;margin:0 auto"></div>
+  <div class="zd"><strong>POST = Power-On Self-Test.</strong> Like a teacher doing attendance! If a part fails, BIOS plays beep codes: 1 beep = all good, 3 beeps = memory error, 5 beeps = CPU error!</div></div>`;
+  const checks=['🧠 CPU — Working!','⚡ RAM — 8GB detected!','🎮 GPU — Found!','⌨️ Keyboard — Connected!','💾 SSD — 256GB ready!','🔊 Speaker — Ready!'];
+  const c=E('postC');
+  checks.forEach((t,i)=>setTimeout(()=>{const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:var(--mint);border:2px solid var(--md);animation:fi .3s ease;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.85rem;font-weight:600;color:var(--mdeep)';d.innerHTML=`${t} <span style="margin-left:auto">✅</span>`;c.appendChild(d)},i*450));
+}
+
+function zRAMEmpty(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">⚡ RAM Memory Map — All Cells Empty!</div>
+  <div class="mg" id="mz"></div>
+  <div class="ml"><span><span class="mld" style="background:var(--pg)"></span> Empty</span></div>
+  <div class="zd">Each box is a <strong>memory address</strong>. Right now all 8 billion bytes are empty (0x00). RAM is <strong>volatile</strong> — it forgets everything when power goes off. Data will load here from the SSD soon!</div></div>`;
+  const g=E('mz');for(let i=0;i<32;i++){const c=document.createElement('div');c.className='mc';c.textContent='0x'+((i*256).toString(16).toUpperCase().padStart(4,'0'));g.appendChild(c)}
+}
+
+function zSSDSearch(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">💾 SSD Chips Reading Boot Sector!</div>
+  <div style="display:flex;justify-content:center;margin:8px 0">
+    <div style="width:140px;height:90px;background:linear-gradient(135deg,#333,#555);border-radius:8px;border:3px solid #222;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:3px;padding:8px" id="ssdV"></div>
+  </div>
+  <div class="zd">The SSD has tiny <strong>flash memory chips</strong> inside. When BIOS asks for the boot sector, the SSD's controller reads it at lightning speed — <strong>3,500 MB/s!</strong> Each chip lights up as it's accessed.</div></div>`;
+  const s=E('ssdV');for(let i=0;i<12;i++){const c=document.createElement('div');c.style.cssText='background:#444;border-radius:2px;transition:all .3s';setTimeout(()=>{c.style.background='var(--elec)';c.style.boxShadow='0 0 8px var(--eleglo)'},i*200);s.appendChild(c)}
+}
+
+function zRAMLoad(type){
+  const labels={grub:'GRUB Bootloader',kernel:'Linux Kernel',services:'System Services'};
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">📦 Loading ${labels[type]} Into RAM!</div>
+  <div class="mg" id="mz2"></div>
+  <div class="ml">
+    <span><span class="mld" style="background:var(--pg)"></span> Empty</span>
+    <span><span class="mld" style="background:var(--sky)"></span> BIOS</span>
+    <span><span class="mld" style="background:#90CAF9"></span> GRUB</span>
+    <span><span class="mld" style="background:var(--rose)"></span> Kernel</span>
+    <span><span class="mld" style="background:var(--yel)"></span> Services</span>
+  </div>
+  <div class="zd"><strong>Data flows: SSD → RAM!</strong> Each program gets its own memory addresses. ${type==='kernel'?'The kernel is the biggest — it needs the most space!':type==='services'?'Services fill up the remaining slots — each one manages a different job!':'GRUB is small but mighty — it knows exactly where Linux lives!'}</div></div>`;
+  const g=E('mz2');
+  const base=['bios','bios','','','','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
+  if(type!=='grub'){base[2]='grub';base[3]='grub'}
+  if(type==='kernel'||type==='services'){for(let i=4;i<12;i++)base[i]='kern'}
+  if(type==='services'){for(let i=12;i<18;i++)base[i]='svc'}
+  for(let i=0;i<32;i++){const c=document.createElement('div');c.className='mc '+(base[i]||'');c.textContent='0x'+((i*256).toString(16).toUpperCase().padStart(4,'0'));g.appendChild(c)}
+  // Animate new cells
+  const start=type==='grub'?2:type==='kernel'?4:12;
+  const end=type==='grub'?4:type==='kernel'?12:18;
+  const cls=type==='grub'?'grub':type==='kernel'?'kern':'svc';
+  const cells=g.querySelectorAll('.mc');
+  for(let i=start;i<end;i++){
+    setTimeout(()=>{cells[i].classList.add('ld');setTimeout(()=>{cells[i].className='mc '+cls;cells[i].classList.add('ld')},300)},((i-start)*300));
+  }
+}
+
+function zPipeline(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">🧠 CPU Pipeline — 3 Stages at Once!</div>
+  <div class="pipe" id="cpP"></div>
+  <div class="zd">The pipeline processes <strong>3 instructions simultaneously!</strong> While one is executing, another is being decoded, and a third is being fetched. This is how CPUs achieve billions of operations per second!</div></div>`;
+  const stages=[
+    {i:'📥',t:'① FETCH',d:'Get next instruction from RAM',c:'RAM addr 0x0200 → CPU'},
+    {i:'🔍',t:'② DECODE',d:'Understand what it means',c:'"Load display driver"'},
+    {i:'⚙️',t:'③ EXECUTE',d:'Do the actual work!',c:'Writing driver to RAM 0x0500'}
+  ];
+  const p=E('cpP');
+  stages.forEach((s,i)=>setTimeout(()=>{const d=document.createElement('div');d.className='ps act';d.innerHTML=`<div class="pi">${s.i}</div><div><h4>${s.t}</h4><p>${s.d}</p><code>${s.c}</code></div>`;p.appendChild(d)},i*600));
+  // Cycle highlight
+  setTimeout(()=>{const els=p.querySelectorAll('.ps');let cy=0;const iv=setInterval(()=>{els.forEach(e=>e.classList.remove('act','dn'));const a=cy%3;for(let i=0;i<a;i++)els[i].classList.add('dn');els[a].classList.add('act');cy++;if(cy>12)clearInterval(iv)},500)},2200);
+}
+
+function zClock(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">⏱️ The Clock — CPU's Heartbeat!</div>
+  <div style="text-align:center;margin:8px 0">
+    <svg viewBox="0 0 400 200" width="100%">
+      <!-- Crystal oscillator -->
+      <rect x="20" y="60" width="80" height="50" rx="8" fill="#B2EBF2" stroke="#00838F" stroke-width="2"/>
+      <text x="60" y="82" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#004D40">⏱️ Crystal</text>
+      <text x="60" y="96" text-anchor="middle" font-family="Consolas" font-size="7" fill="#00695C">Oscillator</text>
+      <!-- Signal wave going to CPU -->
+      <path d="M100,85 L120,85 L125,65 L130,105 L135,65 L140,105 L145,65 L150,105 L155,65 L160,105 L165,65 L170,105 L175,85 L200,85" fill="none" stroke="#00BCD4" stroke-width="2.5">
+        <animate attributeName="stroke-dashoffset" from="0" to="-40" dur="0.5s" repeatCount="indefinite"/>
+      </path>
+      <text x="150" y="55" text-anchor="middle" font-family="Consolas" font-size="7" fill="#00838F">Clock Signal</text>
+      <!-- CPU -->
+      <rect x="200" y="55" width="90" height="60" rx="8" fill="#CE93D8" stroke="#8E24AA" stroke-width="2"/>
+      <text x="245" y="80" text-anchor="middle" font-family="Segoe UI" font-size="11" fill="#4A148C">🧠 CPU</text>
+      <text x="245" y="96" text-anchor="middle" font-family="Consolas" font-size="7" fill="#6A1B9A">1 tick = 1 step</text>
+      <!-- Speed comparison bars -->
+      <text x="20" y="140" font-family="Segoe UI" font-size="8" fill="#4A148C">Speed Comparison:</text>
+      <rect x="20" y="148" width="80" height="14" rx="4" fill="#FFCDD2" stroke="#E53935" stroke-width="1"/>
+      <text x="25" y="159" font-family="Consolas" font-size="7" fill="#B71C1C">1 GHz — Slow</text>
+      <rect x="20" y="166" width="200" height="14" rx="4" fill="#C8E6C9" stroke="#43A047" stroke-width="1"/>
+      <text x="25" y="177" font-family="Consolas" font-size="7" fill="#1B5E20">3.5 GHz — Modern ⭐</text>
+      <rect x="20" y="184" width="320" height="14" rx="4" fill="#FFF9C4" stroke="#F9A825" stroke-width="1.5"/>
+      <text x="25" y="195" font-family="Consolas" font-size="7" fill="#E65100">5 GHz — Gaming Beast! 🔥</text>
+    </svg>
+  </div>
+  <div class="zd"><strong>The crystal oscillator</strong> is a tiny quartz crystal that vibrates at an exact frequency. Each vibration sends a "tick" to the CPU. <strong>1 GHz = 1 billion ticks per second.</strong> A 3.5 GHz CPU gets 3.5 billion ticks — and does work on EVERY tick! That's why a 5 GHz CPU is faster than a 3.5 GHz one — it gets more ticks to do more work in the same time!</div>
+  </div>`;
+  // Animate the comparison bars
+  const bars = E('zBody').querySelectorAll('rect[width]');
+}
+
+function zGPU(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">🎮 GPU → Monitor: Painting Pixels!</div>
+  <div style="text-align:center;margin:8px 0"><canvas id="pxC" width="240" height="160" style="border:3px solid var(--pp);border-radius:10px;image-rendering:pixelated;width:100%;max-width:300px"></canvas></div>
+  <div class="zd">The GPU has <strong>10,000+ cores</strong>. Each core paints ONE pixel. Together they paint 2 million pixels, <strong>60 times per second</strong>! Watch the pixels fill in to form the login screen!</div></div>`;
+  const cv=E('pxC'),cx=cv.getContext('2d');cx.fillStyle='#0a0a28';cx.fillRect(0,0,240,160);
+  let f=0;const draw=()=>{for(let i=0;i<60;i++){const x=Math.random()*240|0,y=Math.random()*160|0;cx.fillStyle=['#4FC3F7','#81C784','#FFB74D','#CE93D8','#F48FB1'][Math.random()*5|0];cx.fillRect(x,y,3,3)}f++;if(f<35)requestAnimationFrame(draw);else{cx.fillStyle='#1565C0';cx.fillRect(0,0,240,160);cx.fillStyle='#fff';cx.font='bold 16px sans-serif';cx.textAlign='center';cx.fillText('Welcome to Linux!',120,45);cx.font='12px sans-serif';cx.fillText('User: student',120,75);cx.fillText('Pass: ●●●●●●',120,95);cx.strokeStyle='#fff';cx.lineWidth=2;cx.strokeRect(75,110,90,24);cx.fillText('Log In',120,127)}};draw();
+}
+
+function zFinal(){
+  E('zBody').innerHTML=`<div style="width:100%"><div class="zt">🎉 All Parts — Full Memory Map!</div>
+  <div class="mg" id="mzF"></div>
+  <div class="ml">
+    <span><span class="mld" style="background:var(--sky)"></span> BIOS</span>
+    <span><span class="mld" style="background:#90CAF9"></span> GRUB</span>
+    <span><span class="mld" style="background:var(--rose)"></span> Kernel</span>
+    <span><span class="mld" style="background:var(--yel)"></span> Services</span>
+    <span><span class="mld" style="background:var(--mint)"></span> Apps</span>
+  </div>
+  <div class="zd">🎉 <strong>RAM is loaded! CPU is running! GPU is drawing! All parts work as a team!</strong> ~15 seconds, billions of operations, one amazing journey from power button to desktop!</div></div>`;
+  const g=E('mzF');
+  const cls=['bios','bios','grub','grub','kern','kern','kern','kern','kern','kern','kern','kern','svc','svc','svc','svc','svc','svc','app','app','app','app','app','app','','','','','','','',''];
+  for(let i=0;i<32;i++){const c=document.createElement('div');c.className='mc '+(cls[i]||'');c.textContent='0x'+((i*256).toString(16).toUpperCase().padStart(4,'0'));g.appendChild(c)}
+}
+
+/* PARTS (flip cards) */
+const P=[
+{n:'CPU',i:'🧠',c:'#E8DCF5',s:'The brain — processes all instructions!',d:'Has billions of transistors. Uses a 3-stage pipeline: FETCH → DECODE → EXECUTE.'},
+{n:'RAM',i:'⚡',c:'#EFCFA8',s:'Fast temporary memory — erased when off!',d:'Like a whiteboard. Programs load here from SSD for fast access.'},
+{n:'SSD',i:'💾',c:'#EFA8CF',s:'Fast permanent storage — keeps files forever!',d:'Uses flash chips with no moving parts. Reads at 3,500 MB/s!'},
+{n:'GPU',i:'🎮',c:'#A8D8EF',s:'10,000+ cores for drawing graphics!',d:'Each core paints 1 pixel. Together: 2M pixels, 60 times/sec!'},
+{n:'PSU',i:'🔋',c:'#EFE8A8',s:'Converts 220V to safe 12V, 5V, 3.3V!',d:'Like a water treatment plant making electricity safe.'},
+{n:'Motherboard',i:'🔌',c:'#A8EFCF',s:'Road network connecting every part!',d:'Copper traces carry data at 60% the speed of light.'},
+{n:'BIOS',i:'📋',c:'#A8D8EF',s:'First program — runs POST at startup!',d:'Checks all hardware, then finds the OS bootloader.'},
+{n:'Linux',i:'🐧',c:'#A8D8EF',s:'Open source OS — free and powerful!',d:'Powers 100% of the top 500 supercomputers!'},
+{n:'Cache',i:'📦',c:'#EFCFA8',s:'Tiny ultra-fast memory inside CPU!',d:'L1 = 1ns access time. Light only travels 30cm in 1ns!'},
+{n:'Clock',i:'⏱️',c:'#B2EBF2',s:'Crystal oscillator — the CPU\'s heartbeat!',d:'Vibrates billions of times/sec. 3.5 GHz = 3.5 billion ticks. Higher GHz = faster CPU!'},
+{n:'NIC (Network Card)',i:'🔌',c:'#B2EBF2',s:'Connects your computer to the network!',d:'Converts data to electrical signals (Ethernet) or radio waves (WiFi). Has a unique MAC address like a hardware fingerprint!'},
+{n:'WiFi',i:'📶',c:'#A8D8EF',s:'Wireless internet using radio waves!',d:'Uses 2.4 GHz or 5 GHz radio. No cables needed! Slower than Ethernet but super convenient. Your laptop and phone use this.'},
+{n:'Bluetooth',i:'🔵',c:'#BBDEFB',s:'Short-range wireless for nearby devices!',d:'Connects keyboards, mice, headphones, and speakers within ~10 meters. Uses 2.4 GHz radio — low power, perfect for battery devices!'},
+{n:'Cooling',i:'❄️',c:'#E8DCF5',s:'Keeps CPU from melting!',d:'Without it, CPU hits 100°C in seconds — boiling water!'}
+];
+E('pGrid').innerHTML=P.map(p=>`<div style="perspective:800px;height:180px;cursor:pointer" class="flip-trigger"><div class="fi" style="position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d"><div style="position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:16px;background:${p.c};display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--md-sh);padding:12px;text-align:center;border:2px solid var(--pp)"><div style="font-size:2.2rem;margin-bottom:4px">${p.i}</div><div style="font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1rem;color:var(--pk)">${p.n}</div><div style="font-size:.78rem;color:var(--txl);margin-top:3px">${p.s}</div><div style="font-size:.62rem;color:var(--txm);margin-top:auto">tap to flip →</div></div><div style="position:absolute;width:100%;height:100%;backface-visibility:hidden;transform:rotateY(180deg);border-radius:16px;background:var(--lav);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--md-sh);padding:14px;text-align:center;border:2px solid var(--pm)"><div style="font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:.95rem;color:var(--pk);margin-bottom:4px">${p.i} ${p.n}</div><div style="font-size:.82rem;color:var(--tx);line-height:1.4">${p.d}</div></div></div></div>`).join('');
+const sty=document.createElement('style');sty.textContent='.fi.fl{transform:rotateY(180deg)}';document.head.appendChild(sty);
+
+/* QUIZ */
+const Q=[
+{q:"What's the CPU?",o:["Storage","Brain of computer","Screen","Mouse"],a:1,e:"The CPU processes all instructions!"},
+{q:"What happens to RAM when power is off?",o:["Nothing","Data disappears","Gets faster","Saves to cloud"],a:1,e:"RAM is volatile — data vanishes!"},
+{q:"What runs FIRST at power-on?",o:["Browser","BIOS/UEFI","Game","Desktop"],a:1,e:"BIOS firmware runs first from a ROM chip."},
+{q:"What does POST stand for?",o:["Power-On Self-Test","Program OS System","Push On Start","Post Office"],a:0,e:"POST checks all hardware at startup!"},
+{q:"Which is faster: SSD or HDD?",o:["HDD","Both same","SSD","CD-ROM"],a:2,e:"SSDs have no moving parts — 100x faster!"},
+{q:"CPU pipeline has how many stages?",o:["1","2","3 (Fetch/Decode/Execute)","10"],a:2,e:"Fetch → Decode → Execute, all simultaneously!"},
+{q:"What OS powers ALL top supercomputers?",o:["Windows","Linux","macOS","Android"],a:1,e:"Linux — open source and amazingly powerful!"},
+{q:"What voltage does the CPU use?",o:["220V","12V","1V","5000V"],a:1,e:"PSU converts 220V down to 12V for the CPU."},
+{q:"Which memory is the FASTEST?",o:["HDD","RAM","L1 Cache","SSD"],a:2,e:"L1 Cache inside CPU — just 1 nanosecond!"},
+{q:"What does the bootloader (GRUB) do?",o:["Cools CPU","Finds & loads OS","WiFi","Graphics"],a:1,e:"GRUB finds Linux on the SSD and loads it into RAM!"},
+{q:"What does GHz mean for a CPU?",o:["Gigabytes of RAM","Billion ticks per second","Screen resolution","Storage size"],a:1,e:"GHz = billions of clock ticks per second. More ticks = faster!"},
+{q:"Why is a 5 GHz CPU faster than a 3.5 GHz?",o:["More RAM","More ticks per second","Bigger screen","More storage"],a:1,e:"5 billion ticks vs 3.5 billion — more ticks means more work done!"},
+{q:"What generates the clock signal?",o:["The fan","Crystal oscillator","The monitor","The keyboard"],a:1,e:"A tiny quartz crystal vibrates to create the heartbeat!"},
+{q:"What does the NIC (Network Card) do?",o:["Draws graphics","Connects to the network","Stores files","Cools the CPU"],a:1,e:"The NIC converts data to electrical signals or WiFi radio waves!"},
+{q:"What's the difference between WiFi and Bluetooth?",o:["WiFi is for internet, Bluetooth is for nearby devices","They're the same","WiFi uses cables","Bluetooth is faster"],a:0,e:"WiFi = internet/network, Bluetooth = short-range (headphones, keyboards)!"}
+];
+let qs=0,qd=0;
+E('qBox').innerHTML=Q.map((q,i)=>`<div style="background:var(--wh);border-radius:16px;padding:16px 18px;box-shadow:var(--md-sh);margin-bottom:12px;border:2px solid transparent;transition:.3s" id="qc${i}"><div style="font-size:.68rem;color:var(--txm);font-weight:700;text-transform:uppercase;margin-bottom:3px">Q${i+1}/${Q.length}</div><div style="font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;font-size:1.05rem;color:var(--pk);margin-bottom:10px">${q.q}</div><div style="display:flex;flex-direction:column;gap:7px">${q.o.map((o,j)=>`<button data-qi="${i}" data-qj="${j}" style="padding:10px 14px;border-radius:10px;border:2px solid var(--pp);background:var(--wh);cursor:pointer;font-size:.88rem;text-align:left;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;transition:.3s">${o}</button>`).join('')}</div><div id="qf${i}" style="display:none;margin-top:8px;padding:8px 12px;border-radius:10px;font-size:.82rem;line-height:1.4"></div></div>`).join('');
+
+function aQ(qi,ai){
+  const q=Q[qi];
+  document.querySelectorAll('#qc'+qi+' button').forEach((b,i)=>{b.disabled=true;b.style.cursor='default';if(i===q.a){b.style.background='var(--mint)';b.style.borderColor='var(--md)';b.style.color='var(--mdeep)'}if(i===ai&&i!==q.a){b.style.background='#fdd';b.style.borderColor='var(--coral)';b.style.color='#6b1a1a'}});
+  const fb=E('qf'+qi);fb.style.display='block';
+  if(ai===q.a){fb.style.background='var(--mint)';fb.style.color='var(--mdeep)';fb.textContent='✅ '+q.e;qs++;E('qc'+qi).style.borderColor='var(--md)'}
+  else{fb.style.background='#fdd';fb.style.color='#6b1a1a';fb.textContent='❌ '+q.e;E('qc'+qi).style.borderColor='var(--coral)'}
+  qd++;if(qd===Q.length)setTimeout(()=>{const f=E('qF');f.style.display='block';const p=Math.round(qs/Q.length*100);E('qFT').textContent=`🏆 ${qs}/${Q.length} (${p}%)`;E('qFM').textContent=p>=90?'🥇 Gold — Computer Genius!':p>=70?'🥈 Silver — Great!':p>=50?'🥉 Bronze — Keep learning!':'📚 Review and try again!';f.scrollIntoView({behavior:'smooth',block:'center'})},500);
+}
+
+// === CSP-safe event listeners ===
+E('bA').addEventListener('click', bAuto);
+E('bN').addEventListener('click', bNext);
+E('bR').addEventListener('click', bReset);
+E('pGrid').addEventListener('click', function(ev) {
+  var t = ev.target.closest('.flip-trigger');
+  if (t) { var fi = t.querySelector('.fi'); if (fi) fi.classList.toggle('fl'); }
+});
+E('qBox').addEventListener('click', function(ev) {
+  var btn = ev.target.closest('[data-qi]');
+  if (btn) aQ(parseInt(btn.dataset.qi), parseInt(btn.dataset.qj));
+});
+</script>
